@@ -1,1 +1,1 @@
-# proj-kelola-uang
+# Aplikasi Kelola Uang Pribadi
