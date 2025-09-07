@@ -1,0 +1,88 @@
+@import url('color-pallet.css');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: var(--neutral--100);
+    padding: 90px  40px  0px 40px;
+    color: var(--text-primary);
+}
+
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    padding: 20px;
+    background-color: var(--primary--200);
+}
+
+.header-container > img {
+    height: 40px;
+    margin-right: 20px;
+}
+
+.statistic-container {
+    display: flex;
+    gap: 20px;
+}
+
+.statistic-card {
+    flex: 1;
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.statistic-card h3, .statistic-card h2{
+    font-weight: 200;
+}
+
+.menu-container {
+    display: flex;
+    gap: 15px;
+    padding: 15px 20px;
+    background-color: var(--secondary-color);
+}
+
+.charts {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.graph-container {
+    display: flex;
+}
+
+.graph-card {
+    flex: 1;
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px;
+}
+
+.graph-wrapper {
+    margin: -20px -20px 0 -20px;
+}
+
+.graph-title {
+    border-radius: 8px 8px 0 0;
+    padding: 5px;
+    background-color: var(  --neutral--200);
+}
+
+@media (max-width: 768px) {
+    .statistic-container, .graph-container {
+        flex-direction: column;
+    }
+}

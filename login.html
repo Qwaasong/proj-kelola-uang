@@ -1,0 +1,53 @@
+<?php
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="public/css/auth-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Login | Kelola Uang</title>
+</head>
+<body>
+    <img src="public/asset/Logo-Icons.png" alt="kelola Uang Logo">
+    <div>
+        <h1>Login</h1>
+        <form action="" method="post">
+        <p>Nama Pengguna</p>
+        <div class="input-container">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" name="username" placeholder="Nama Pengguna" required>
+        </div>
+        <p>Kata Sandi</p>
+        <div class="input-container">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" name="password" placeholder="Kata Sandi" required>
+            <span class="toggle-password" onclick="togglePassword(this)">
+                <i class="fa-solid fa-eye"></i>
+            </span>
+        </div>
+        <button type="submit">Masuk</button>
+        <p style="text-align: center; margin-top: 30px;" >Belum punya akun? <a href="register.html" style="color: var(--primary--500); text-decoration: none;">Klik Disini</a></p>
+        </form>
+    </div>
+    <p>Dibuat Dengan VS Code Oleh Kelompok 11</p>
+    <p>© 2025 Kelola Uang</p>
+</body>
+    <script>
+        function togglePassword(element) {
+            const container = element.closest('.input-container');
+            const passwordField = container.querySelector('input');
+            const icon = element.querySelector('i');
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+    </script>
+</html>
