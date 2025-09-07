@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,83 +10,116 @@
 
 <body>
     <div class="header-container"><img src="public/asset/Logo-Icons.png" alt="kelola Uang Logo"></div>
-    <div class="statistic-container">
-        <div class="statistic-card">
-            <h3>Pemasukan Bulan Ini</h3>
-            <br>
-            <h2>Rp. 5.000.000</h2>
+    <div class="content">
+        <div class="tip-container">
+            <p>Tip: Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad nisi cum qui eligendi, itaque pariatur
+                voluptatibus praesentium recusandae quos adipisci deserunt perspiciatis porro impedit, id neque vitae
+                odio. Nam, alias!</p>
         </div>
-        <div class="statistic-card">
-            <h3>Pengeluaran Bulan Ini</h3>
-            <br>
-            <h2>Rp. 3.000.000   </h2>
-        </div>
-        <div class="statistic-card">
-            <h3>Total Saldo</h3>
-            <br>
-            <h2>Rp. 2.000.000</h2>
-        </div>
-        <div class="statistic-card">
-            <h3>Dana Darurat</h3>
-            <br>
-            <h2>Rp. 2.000.000</h2>
-        </div>
-    </div>
-    <div class="top-transaction-container">
-        <div class="top-transaction-card">
-            <img src="" alt="">
-            <p>Makanan</p>
-            <p>Rp. 500.000</p>
-        </div>
-    </div>
-    <div class="menu-container">
-        <div class="menu-card"><img src="" alt="">
-            <p>Pemasukan</p>
-        </div>
-        <div class="menu-card"><img src="" alt="">
-            <p>Pengeluaran
-        </div>
-        <div class="menu-card"><img src="" alt="">
-            <p>Pemasukan Berulang</p>
-        </div>
-        <div class="menu-card"><img src="" alt="">
-            <p>Pengeluaran Berulang</p>
-        </div>
-        <div class="menu-card"><img src="" alt="">
-            <p>Target</p>
-        </div>
-        <div class="menu-card"><img src="" alt="">
-            <p>Dana Darurat</p>
-        </div>
-        <div class="menu-card"><img src="" alt="">
-            <p>Laporan</p>
-        </div>
-    </div>
-    <div class="graph-container">
-        <div class="graph-card">
-            <div class="graph-wrapper">
-                <div class="graph-title">Pemasukan dan Pengeluaran Bulan Ini</div>
+        <div class="statistic-container">
+            <div class="statistic-card">
+                <h3>Pemasukan Bulan Ini</h3>
+                <br>
+                <h2>Rp. 5.000.000</h2>
             </div>
-            <canvas id="statistic30days"></canvas>
-        </div>
-        <div class="graph-card">
-            <div class="graph-wrapper">
-                <div class="graph-title">Pemasukan dan Pengeluaran Bulan Ini</div>
+            <div class="statistic-card">
+                <h3>Pengeluaran Bulan Ini</h3>
+                <br>
+                <h2>Rp. 3.000.000 </h2>
             </div>
-            <canvas id="statistic6months"></canvas>
+            <div class="statistic-card">
+                <h3>Total Saldo</h3>
+                <br>
+                <h2>Rp. 2.000.000</h2>
+            </div>
+            <div class="statistic-card">
+                <h3>Dana Darurat</h3>
+                <br>
+                <h2>Rp. 2.000.000</h2>
+            </div>
+        </div>
+        <div class="column-area01">
+            <div class="top-transaction-container">
+                <h4>Transaksi Terakhir</h4>
+                <div class="top-transaction-card">
+                    <div style="display: flex; align-items: center;">
+                        <div
+                            style="background-color: aqua; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                            <span class="material-symbols-outlined">fork_spoon</span>
+                        </div>
+                        <p>Makanan</p>
+                    </div>
+                    <p>Rp. 500.000</p>
+                </div>
+            </div>
+            <div class="menu-container">
+                <div class="menu-card"><img src="" alt="">
+                    <p>Pemasukan</p>
+                </div>
+                <div class="menu-card"><img src="" alt="">
+                    <p>Pengeluaran
+                </div>
+                <div class="menu-card"><img src="" alt="">
+                    <p>Pemasukan Berulang</p>
+                </div>
+                <div class="menu-card"><img src="" alt="">
+                    <p>Pengeluaran Berulang</p>
+                </div>
+                <div class="menu-card"><img src="" alt="">
+                    <p>Target</p>
+                </div>
+                <div class="menu-card"><img src="" alt="">
+                    <p>Dana Darurat</p>
+                </div>
+                <div class="menu-card"><img src="" alt="">
+                    <p>Laporan</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="column-area02">
+            <div class="graph-container">
+                <div class="graph-card">
+                    <div class="graph-wrapper">
+                        <div class="graph-title">Pemasukan dan Pengeluaran Bulan Ini</div>
+                    </div>
+                    <canvas id="statistic30days"></canvas>
+                </div>
+                <div class="graph-card">
+                    <div class="graph-wrapper">
+                        <div class="graph-title">Pemasukan dan Pengeluaran Bulan Ini</div>
+                    </div>
+                    <canvas id="statistic6months"></canvas>
+                </div>
+            </div>
+            <div class="top-transaction-container">
+                <h4>Transaksi Terakhir</h4> 
+                <div class="top-transaction-card">
+                    <div style="display: flex; align-items: center;">
+                        <div
+                            style="background-color: aqua; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                            <span class="material-symbols-outlined">fork_spoon</span>
+                        </div>
+                        <p>Makanan</p>
+                    </div>
+                    <p>Rp. 500.000</p>
+                </div>
+            </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
     <script src="public/js/chart-helper.js"></script>
     <script>
         const cfg1 = {
-        labels: ['Minggu 1','Minggu 2','Minggu 3','Minggu 4'],
-        datasets: [
-            { label: 'Pemasukan', data: [10,20,30,15], backgroundColor: 'rgba(31,119,180,0.6)', fill: true },
-            { label: 'Pengeluaran', data: [5,25,15,10], backgroundColor: 'rgba(255,127,14,0.6)', fill: true }
-        ]
+            labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
+            datasets: [
+                { label: 'Pemasukan', data: [10, 20, 30, 15], backgroundColor: 'rgba(31,119,180,0.6)', fill: true },
+                { label: 'Pengeluaran', data: [5, 25, 15, 10], backgroundColor: 'rgba(255,127,14,0.6)', fill: true }
+            ]
         };
-          const g1 = createGraph('statistic30days', cfg1, {
+        const g1 = createGraph('statistic30days', cfg1, {
             type: 'line',
             stacked: false,
             chartJsOptions: {
@@ -93,24 +127,24 @@
                 elements: { line: { tension: 0.4 } },
                 scales: {
                     x: {
-                    grid: {
-                        display: true
-                    }
+                        grid: {
+                            display: true
+                        }
                     },
                     y: {
-                    grid: {
-                        display: false
-                    }
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
         });
 
         const cfg2 = {
-            labels: ['Januari','Februari','Maret','April','Mei','Juni'],
+            labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
             datasets: [
-                { label: 'Pemasukan', data: [500,700,800,600,900,750], backgroundColor: 'rgba(31,119,180,0.6)' },
-                { label: 'Pengeluaran', data: [300,400,500,450,600,550], backgroundColor: 'rgba(255,127,14,0.6)' }
+                { label: 'Pemasukan', data: [500, 700, 800, 600, 900, 750], backgroundColor: 'rgba(31,119,180,0.6)' },
+                { label: 'Pengeluaran', data: [300, 400, 500, 450, 600, 550], backgroundColor: 'rgba(255,127,14,0.6)' }
             ]
         };
         const g2 = createGraph('statistic6months', cfg2, { type: 'bar', stacked: false });
