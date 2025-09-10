@@ -1,134 +1,373 @@
 @import url('core.css');
 
+:root {
+    /* --neutral--100: #f5f5f5;
+    --neutral--200: #e8e8e8;
+    --primary--200: #4a6fa5;
+    --accent--100: #ffd166;
+    --card-bg-color: #ffffff; */
+    --income-color: #27ae60;
+    --expense-color: #e74c3c;
+    --income-bg: #d5f5e3;
+    --expense-bg: #fadbd8;
+    --text-primary: #333333;
+    --success-color: #06d6a0;
+    --danger-color: #ef476f;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 * {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
 
-.content {
-    display: grid;
+body {
     background-color: var(--neutral--100);
-    padding: 90px  40px  0px 40px;
     color: var(--text-primary);
-    gap: 20px;
+    line-height: 1.6;
 }
 
-.header-container {
+/* === Header === */
+.header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     display: flex;
-    padding: 20px;
+    align-items: center;
+    padding: 1rem 1.5rem;
     background-color: var(--primary--200);
+    color: white;
+    z-index: 1000;
+    box-shadow: var(--shadow);
 }
 
-.header-container > img {
+.header__logo {
     height: 40px;
     margin-right: 20px;
 }
 
+/* === Main Content ===  */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 6rem 1.5rem 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* === Tip Container ===  */
 .tip-container {
     display: flex;
-    height: 40px;
     align-items: center;
+    padding: 0.75rem 1rem;
     background-color: var(--accent--100);
+    border-radius: 8px;
     overflow: hidden;
 }
 
-.tip-container  p {    
+.tip-container p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 0;
 }
 
-.statistic-container {
-    display: flex;
-    gap: 20px;
+/* === Statistics === */
+.statistics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
 }
 
-.statistic-card {
-    flex: 1;
+.stat-card {
     background-color: var(--card-bg-color);
-    padding: 20px;
+    padding: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
 }
 
-.statistic-card h3, .statistic-card h2 {
-    font-weight: 200;
+.stat-card__title {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #666;
+    margin-bottom: 0.5rem;
 }
 
-.column-area01 {
+.stat-card__value {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.income .stat-card__value {
+    color: var(--success-color);
+}
+
+.expense .stat-card__value {
+    color: var(--danger-color);
+}
+
+.trend {
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    margin-top: 10px;
 }
 
-.top-transaction-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    gap: 0px 20px;
-    padding: 10px;
+.trend.up {
+    color: var(--income-color);
+}
+
+.trend.down {
+    color: var(--expense-color);
+}
+
+.progress-container {
+    margin-top: 15px;
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: var(--neutral--200);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--accent--500);
+    border-radius: 4px;
+}
+
+/* === Content Areas ===  */
+.content-area {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .content-area--01 {
+        grid-template-columns: 1fr 2fr;
+    }
+
+    .content-area--02 {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* === Transactions === */
+.transactions {
     background-color: var(--card-bg-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
 }
 
-.top-transaction-card {
+.section-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--neutral--200);
+}
+
+.transaction-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 20px;
-    background-color: var(--neutral--200);
-    border-radius: 5px;
+    padding: 15px;
+    background-color: var(--neutral--100);
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
 }
 
-.menu-container {
+.top-transaction-card:hover {
+    background-color: var(--neutral--200);
+}
+
+.transaction-info {
     display: flex;
-    flex: 3;
+    align-items: center;
     gap: 15px;
-    padding: 15px 20px;
-    background-color: var(--secondary-color);
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+}
+
+.category-icon.food {
+    background-color: #e74c3c;
+}
+
+.category-icon.salary {
+    background-color: #27ae60;
+}
+
+.category-icon.transport {
+    background-color: #3498db;
+}
+
+.category-icon.shopping {
+    background-color: #9b59b6;
+}
+
+.transaction-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.transaction-category {
+    font-weight: 500;
+    margin: 0;
+}
+
+.transaction-time {
+    font-size: 12px;
+    color: var(--neutral--500);
+    margin: 0;
+}
+
+.transaction-amount {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.transaction-amount.income {
+    color: var(--income-color);
+}
+
+.transaction-amount.expense {
+    color: var(--expense-color);
+}
+
+
+/* === Menu Grid ===  */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+    background-color: var(--neutral--100);
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.menu-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary--200);
+}
+
+.menu-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* === Charts === */
+.charts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .charts {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.chart-card {
+    background-color: var(--card-bg-color);
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
     overflow: hidden;
 }
 
-.column-area02 {
-    display: flex;
+.chart-header {
+    padding: 0.75rem 1rem;
+    background-color: var(--neutral--200);
+    font-weight: 500;
 }
 
-.charts {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+.chart-body {
+    padding: 1rem;
+    height: 250px;
 }
 
-.graph-container {
-    display: flex;
-    flex: 2;
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .main-content {
+        padding: 5rem 1rem 1rem;
+    }
+
+    .statistics {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.graph-card {
-    flex: 1;
-    background-color: var(--card-bg-color);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 20px;
+@media (max-width: 576px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
+
+    .header__logo {
+        height: 32px;
+    }
+
+    .main-content {
+        padding: 4.5rem 0.75rem 0.75rem;
+        gap: 1rem;
+    }
+
+    .statistics {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .chart-body {
+        height: 200px;
+    }
 }
 
-.graph-wrapper {
-    margin: -20px -20px 0 -20px;
-}
-
-.graph-title {
-    border-radius: 8px 8px 0 0;
-    padding: 5px;
-    background-color: var(  --neutral--200);
-}
-
+/* Improved tip container for mobile */
 @media (max-width: 768px) {
-    .statistic-container, .graph-container {
-        flex-direction: column;
+    .tip-container p {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
     }
 }
