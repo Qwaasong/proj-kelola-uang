@@ -9,7 +9,7 @@ session_start();
 // Jika pengguna sudah login (ada session 'user_id'),
 // langsung arahkan ke dashboard agar tidak perlu login lagi.
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.html");
+    header("Location: dashboard.php");
     exit();
 }
 
