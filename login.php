@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['username'] = $user['username'];
                 
                 // Arahkan pengguna ke halaman dashboard.
-                header("Location: dashboard.html");
+                header("Location: dashboard.php");
                 exit();
             } else {
                 // Jika password salah.
