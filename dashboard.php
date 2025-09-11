@@ -273,7 +273,6 @@ $stmt_chart->close();
                 </div>
             </div>
         </section>
-
         <section class="content-area content-area--02">
             <div class="chart-section">
                 <div class="chart-card">
@@ -498,6 +497,7 @@ $stmt_chart->close();
                     }
                 }
             });
+        });
     </script>
 
 </body>
