@@ -355,7 +355,7 @@ $stmt_chart->close();
                             border: { display: true }
                         },
                         y: {
-                            grid: { display: true },
+                            grid: { display: false },
                             border: { display: true }
                         }
                     }
