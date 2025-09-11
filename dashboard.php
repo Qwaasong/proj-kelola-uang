@@ -498,7 +498,6 @@ $stmt_chart->close();
                     }
                 }
             });
-        });
     </script>
 
 </body>
