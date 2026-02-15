@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengeluaran | Kelola Uang</title>
-    <link rel="stylesheet" href="public/css/transaction-style.css">
+    <link rel="stylesheet" href="css/transaction-style.css">
 </head>
+
 <body>
 
     <header class="header">
-        <img src="public/asset/Logo-Icons.png" alt="Kelola Uang Logo" class="header__logo">
+        <img src="asset/Logo-Icons.png" alt="Kelola Uang Logo" class="header__logo">
     </header>
-    
+
     <main class="main-content">
         <div class="add-container">
             <h2 class="add-container__title">Tambah Pengeluaran</h2>
@@ -74,7 +76,7 @@
                     </tbody>
                 </table>
                 <div class="mobile-history__list">
-                    <div class="mobile-history__card">   
+                    <div class="mobile-history__card">
                         <div class="mobile-history__info">
                             <h2 class="mobile-history__date">4 Agustus 2025</h2>
                             <p class="mobile-history__category">Transportasi</p>
@@ -90,15 +92,15 @@
             </div>
         </div>
         <div class="back-container">
-            <a href="index.html" class="back-btn__link">Kembali ke Beranda</a>
+            <a href="/dashboard" class="back-btn__link">Kembali ke Beranda</a>
         </div>
     </main>
 
     <script>
         // Membuat seluruh input tanggal bisa diklik
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.getElementById('income-date');
-            
+
             if (dateInput) {
                 // Fungsi untuk membuka date picker dengan penanganan error
                 function openDatePicker() {
@@ -116,11 +118,11 @@
                         this.focus();
                     }
                 }
-                
+
                 dateInput.addEventListener('click', openDatePicker);
-                
+
                 // Juga memastikan fokus bekerja dengan baik
-                dateInput.addEventListener('focus', function() {
+                dateInput.addEventListener('focus', function () {
                     // Memberikan sedikit delay agar fokus bekerja dengan baik
                     setTimeout(() => {
                         try {
@@ -136,4 +138,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -3,7 +3,7 @@
 // Bertugas untuk menangani proses pendaftaran pengguna baru.
 
 // Memanggil file koneksi agar bisa terhubung ke database.
-require 'utils/connection.php';
+require '../utils/connection.php';
 
 // Inisialisasi variabel untuk menyimpan pesan error.
 $error_message = '';
@@ -41,14 +41,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Enkripsi password sebelum disimpan ke database. Ini WAJIB untuk keamanan.
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Siapkan query INSERT dengan prepared statement.
-            $stmt_insert = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+            // Siapkan query INSERT dengan memberikan nilai default (string kosong) 
+            // untuk first_name dan last_name agar tidak error jika kolom tersebut NOT NULL.
+            $stmt_insert = $conn->prepare("INSERT INTO users (username, password, first_name, last_name) VALUES (?, ?, '', '')");
             $stmt_insert->bind_param("ss", $username, $hashed_password);
 
             // Eksekusi query INSERT.
             if ($stmt_insert->execute()) {
                 // Jika berhasil, arahkan pengguna ke halaman login.
-                header("Location: login.php");
+                header("Location: /login");
                 exit(); // Hentikan eksekusi script setelah redirect.
             } else {
                 // Jika gagal, tampilkan pesan error.
@@ -66,20 +67,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/css/auth-style.css">
+    <link rel="stylesheet" href="css/auth-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Register | Kelola Uang</title>
 </head>
+
 <body>
-    <img src="public/asset/Logo-Icons.png" alt="kelola Uang Logo">
+    <img src="asset/Logo-Icons.png" alt="kelola Uang Logo">
     <div>
         <h1>Register</h1>
 
         <form action="" method="post">
-            
+
             <?php if (!empty($error_message)): ?>
                 <p style="color: red; text-align: center; margin-bottom: 15px;"><?php echo $error_message; ?></p>
             <?php endif; ?>
@@ -102,32 +105,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>Konfirmasi Kata Sandi</p>
             <div class="input-container">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Konfirmasi Kata Sandi" required>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Konfirmasi Kata Sandi"
+                    required>
                 <span class="toggle-password" onclick="togglePassword(this)">
                     <i class="fa-solid fa-eye"></i>
                 </span>
             </div>
 
             <button type="submit">Register</button>
-            <p style="text-align: center; margin-top: 30px;">Sudah punya akun? <a href="login.php" style="color: var(--primary--500); text-decoration: none;">Login Disini</a></p>
+            <p style="text-align: center; margin-top: 30px;">Sudah punya akun? <a href="/login"
+                    style="color: var(--primary--500); text-decoration: none;">Login Disini</a></p>
         </form>
     </div>
     <p>Dibuat Dengan VS Code Oleh Kelompok 11</p>
     <p>© 2025 Kelola Uang</p>
 </body>
-    <script>
-        function togglePassword(element) {
-            const container = element.closest('.input-container');
-            const passwordField = container.querySelector('input');
-            const icon = element.querySelector('i');
+<script>
+    function togglePassword(element) {
+        const container = element.closest('.input-container');
+        const passwordField = container.querySelector('input');
+        const icon = element.querySelector('i');
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.replace("fa-eye", "fa-eye-slash");
-            } else {
-                passwordField.type = "password";
-                icon.classList.replace("fa-eye-slash", "fa-eye");
-            }
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
         }
-    </script>
+    }
+</script>
+
 </html>

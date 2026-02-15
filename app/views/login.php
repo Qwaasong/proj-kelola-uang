@@ -9,12 +9,12 @@ session_start();
 // Jika pengguna sudah login (ada session 'user_id'),
 // langsung arahkan ke dashboard agar tidak perlu login lagi.
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
+    header("Location: /dashboard");
     exit();
 }
 
 // Memanggil file koneksi untuk terhubung ke database.
-require 'utils/connection.php';
+require '../utils/connection.php';
 
 // Inisialisasi variabel untuk menyimpan pesan error.
 $error_message = '';
@@ -45,13 +45,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verifikasi password yang diinput dengan hash password di database.
             if (password_verify($password, $user['password'])) {
                 // Jika password cocok, login berhasil!
-                
+
                 // Simpan informasi penting pengguna ke dalam session.
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                
+
                 // Arahkan pengguna ke halaman dashboard.
-                header("Location: dashboard.php");
+                header("Location: /dashboard");
                 exit();
             } else {
                 // Jika password salah.
@@ -69,15 +69,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/css/auth-style.css">
+    <link rel="stylesheet" href="css/auth-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Login | Kelola Uang</title>
 </head>
+
 <body>
-    <img src="public/asset/Logo-Icons.png" alt="kelola Uang Logo">
+    <img src="asset/Logo-Icons.png" alt="kelola Uang Logo">
     <div>
         <h1>Login</h1>
         <form action="" method="post">
@@ -100,25 +102,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </span>
             </div>
             <button type="submit">Masuk</button>
-            <p style="text-align: center; margin-top: 30px;" >Belum punya akun? <a href="register.php" style="color: var(--primary--500); text-decoration: none;">Klik Disini</a></p>
+            <p style="text-align: center; margin-top: 30px;">Belum punya akun? <a href="/register"
+                    style="color: var(--primary--500); text-decoration: none;">Klik Disini</a></p>
         </form>
     </div>
     <p>Dibuat Dengan VS Code Oleh Kelompok 11</p>
     <p>© 2025 Kelola Uang</p>
 </body>
-    <script>
-        function togglePassword(element) {
-            const container = element.closest('.input-container');
-            const passwordField = container.querySelector('input');
-            const icon = element.querySelector('i');
+<script>
+    function togglePassword(element) {
+        const container = element.closest('.input-container');
+        const passwordField = container.querySelector('input');
+        const icon = element.querySelector('i');
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.replace("fa-eye", "fa-eye-slash");
-            } else {
-                passwordField.type = "password";
-                icon.classList.replace("fa-eye-slash", "fa-eye");
-            }
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
         }
-    </script>
+    }
+</script>
+
 </html>

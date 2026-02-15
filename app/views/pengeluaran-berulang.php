@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pemasukan | Kelola Uang</title>
-    <link rel="stylesheet" href="public/css/transaction-style.css">
+    <title>Pengeluaran Berulang | Kelola Uang</title>
+    <link rel="stylesheet" href="css/transaction-style.css">
 </head>
+
 <body>
 
     <header class="header">
-        <img src="public/asset/Logo-Icons.png" alt="Kelola Uang Logo" class="header__logo">
+        <img src="asset/Logo-Icons.png" alt="Kelola Uang Logo" class="header__logo">
     </header>
-    
+
     <main class="main-content">
         <div class="add-container">
-            <h2 class="add-container__title">Tambah Pemasukan</h2>
+            <h2 class="add-container__title">Tambah Pengeluaran Berulang</h2>
             <form action="#" class="add-form">
                 <div class="form-group">
                     <label for="income-date" class="form-label">Tanggal</label>
@@ -25,7 +27,7 @@
                     <input type="text" id="income-category" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label for="income-amount" class="form-label">Jumlah Pemasukan</label>
+                    <label for="income-amount" class="form-label">Jumlah Pengeluaran</label>
                     <input type="number" id="income-amount" class="form-input" required>
                 </div>
                 <div class="form-group textarea-group">
@@ -39,7 +41,7 @@
         </div>
         <div class="history-container">
             <div class="history-container__header">
-                <h2 class="history-container__title">Riwayat Pemasukan</h2>
+                <h2 class="history-container__title">Riwayat Pengeluaran</h2>
             </div>
             <div class="history-container__list">
                 <div class="query-container">
@@ -66,20 +68,20 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>2023-10-01</td>
-                            <td>Rp 1.000.000</td>
-                            <td>Gaji</td>
-                            <td>Penerimaan gaji bulanan</td>
+                            <td>4 Agustus 2025</td>
+                            <td>Rp 300.000</td>
+                            <td>Transportasi</td>
+                            <td>Biaya Bensin ke Kantor</td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="mobile-history__list">
-                    <div class="mobile-history__card">   
+                    <div class="mobile-history__card">
                         <div class="mobile-history__info">
                             <h2 class="mobile-history__date">4 Agustus 2025</h2>
-                            <p class="mobile-history__category">Gaji</p>
+                            <p class="mobile-history__category">Transportasi</p>
                         </div>
-                        <h2 class="mobile-history__value">Rp 5.000.000</h2>
+                        <h2 class="mobile-history__value">Rp 300.000</h2>
                     </div>
                 </div>
                 <div class="history-container__pagination">
@@ -90,15 +92,15 @@
             </div>
         </div>
         <div class="back-container">
-            <a href="index.html" class="back-btn__link">Kembali ke Beranda</a>
+            <a href="/dashboard" class="back-btn__link">Kembali ke Beranda</a>
         </div>
     </main>
 
     <script>
         // Membuat seluruh input tanggal bisa diklik
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.getElementById('income-date');
-            
+
             if (dateInput) {
                 // Fungsi untuk membuka date picker dengan penanganan error
                 function openDatePicker() {
@@ -116,11 +118,11 @@
                         this.focus();
                     }
                 }
-                
+
                 dateInput.addEventListener('click', openDatePicker);
-                
+
                 // Juga memastikan fokus bekerja dengan baik
-                dateInput.addEventListener('focus', function() {
+                dateInput.addEventListener('focus', function () {
                     // Memberikan sedikit delay agar fokus bekerja dengan baik
                     setTimeout(() => {
                         try {
@@ -136,4 +138,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -12,6 +12,6 @@ $_SESSION = array();
 session_destroy();
 
 // Arahkan pengguna kembali ke halaman login setelah berhasil logout.
-header("Location: login.php");
+header("Location: /login");
 exit();
 ?>
