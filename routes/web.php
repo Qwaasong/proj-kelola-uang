@@ -2,14 +2,10 @@
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Jika aplikasi dijalankan di subfolder (seperti /proj-kelola-uang/public/), 
-// kita perlu membersihkan URI agar routing tetap bekerja.
-// Untuk saat ini kita asumsikan root adalah /
-
 switch ($uri) {
     case '/':
     case '/login':
-        require '../app/views/login.php';
+        require '../public/views/login.php';
         break;
 
     case '/dashboard':
@@ -19,27 +15,27 @@ switch ($uri) {
         break;
 
     case '/pemasukan':
-        require '../app/views/pemasukan.php';
+        require '../public/views/pemasukan.php';
         break;
 
     case '/pengeluaran':
-        require '../app/views/pengeluaran.php';
+        require '../public/views/pengeluaran.php';
         break;
 
     case '/pemasukan-berulang':
-        require '../app/views/pemasukan-berulang.php';
+        require '../public/views/pemasukan-berulang.php';
         break;
 
     case '/pengeluaran-berulang':
-        require '../app/views/pengeluaran-berulang.php';
+        require '../public/views/pengeluaran-berulang.php';
         break;
 
     case '/register':
-        require '../app/views/register.php';
+        require '../public/views/register.php';
         break;
 
     case '/logout':
-        require '../app/views/logout.php';
+        require '../public/views/logout.php';
         break;
 
     default:

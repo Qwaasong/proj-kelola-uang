@@ -17,8 +17,6 @@ class DashboardController
         $user_id = $_SESSION['user_id'];
         $username = $_SESSION['username'];
 
-        // --- PENGAMBILAN DATA DINAMIS DARI DATABASE ---
-
         // 1. Data untuk 4 Kartu Statistik Teratas
         $pemasukan_bulan_ini = 0;
         $pengeluaran_bulan_ini = 0;
@@ -95,6 +93,6 @@ class DashboardController
         $stmt_chart->close();
 
         // Akhirnya, tampilkan view
-        require '../app/views/dashboard.php';
+        require '../public/views/dashboard.php';
     }
 }

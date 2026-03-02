@@ -40,7 +40,8 @@
                 <div class="stat-card__body">
                     <div class="stat-card__main-value">
                         <p class="stat-card__value">
-                            <?php echo 'Rp ' . number_format($pemasukan_bulan_ini, 0, ',', '.'); ?></p>
+                            <?php echo 'Rp ' . number_format($pemasukan_bulan_ini, 0, ',', '.'); ?>
+                        </p>
                         <p class="stat-card__subtext">from 670 (last 30 days)</p>
                     </div>
                     <div class="stat-card__chart">
@@ -59,7 +60,8 @@
                 <div class="stat-card__body">
                     <div class="stat-card__main-value">
                         <p class="stat-card__value">
-                            <?php echo 'Rp ' . number_format($pengeluaran_bulan_ini, 0, ',', '.'); ?></p>
+                            <?php echo 'Rp ' . number_format($pengeluaran_bulan_ini, 0, ',', '.'); ?>
+                        </p>
                         <p class="stat-card__subtext">from 3.200.000 (last 30 days)</p>
                     </div>
                     <div class="stat-card__chart">
@@ -96,9 +98,11 @@
                 <div class="stat-card__body">
                     <div class="stat-card__main-value">
                         <p class="stat-card__value">
-                            <?php echo 'Rp ' . number_format($dana_darurat_saat_ini, 0, ',', '.'); ?></p>
+                            <?php echo 'Rp ' . number_format($dana_darurat_saat_ini, 0, ',', '.'); ?>
+                        </p>
                         <p class="stat-card__subtext">dari target
-                            <?php echo 'Rp ' . number_format($dana_darurat_target, 0, ',', '.'); ?></p>
+                            <?php echo 'Rp ' . number_format($dana_darurat_target, 0, ',', '.'); ?>
+                        </p>
                     </div>
                     <div class="stat-card__chart">
                         <div class="progress-container">
@@ -115,35 +119,41 @@
 
         <section class="content-area content-area--01">
             <div class="menu-grid">
-                <span class="menu-name">Pemasukan</span>
-            </div>
-            <div class="menu-item" role="button" tabindex="0" aria-label="Tambah pengeluaran"
-                onclick="window.location.href='/pengeluaran'">
-                <i class="material-icons menu-icon">payments</i>
-                <span class="menu-name">Pengeluaran</span>
-            </div>
-            <span class="menu-name">Pemasukan Berulang</span>
-            </div>
-            <div class="menu-item" role="button" tabindex="0" aria-label="Pengeluaran berulang"
-                onclick="window.location.href='/pengeluaran-berulang'">
-                <i class="material-icons menu-icon">repeat</i>
-                <span class="menu-name">Pengeluaran Berulang</span>
-            </div>
-            <div class="menu-item" role="button" tabindex="0" aria-label="Target keuangan"
-                onclick="window.location.href='halaman-tujuan.html'">
-                <i class="material-icons menu-icon">flag</i>
-                <span class="menu-name">Target</span>
-            </div>
-            <div class="menu-item" role="button" tabindex="0" aria-label="Dana darurat"
-                onclick="window.location.href='halaman-tujuan.html'">
-                <i class="material-icons menu-icon">emergency</i>
-                <span class="menu-name">Dana Darurat</span>
-            </div>
-            <div class="menu-item" role="button" tabindex="0" aria-label="Laporan keuangan"
-                onclick="window.location.href='halaman-tujuan.html'">
-                <i class="material-icons menu-icon">bar_chart</i>
-                <span class="menu-name">Laporan</span>
-            </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Tambah pemasukan"
+                    onclick="window.location.href='/pemasukan'">
+                    <i class="material-icons menu-icon">add_circle</i>
+                    <span class="menu-name">Pemasukan</span>
+                </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Tambah pengeluaran"
+                    onclick="window.location.href='/pengeluaran'">
+                    <i class="material-icons menu-icon">payments</i>
+                    <span class="menu-name">Pengeluaran</span>
+                </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Pemasukan berulang"
+                    onclick="window.location.href='/pemasukan-berulang'">
+                    <i class="material-icons menu-icon">event_repeat</i>
+                    <span class="menu-name">Pemasukan Berulang</span>
+                </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Pengeluaran berulang"
+                    onclick="window.location.href='/pengeluaran-berulang'">
+                    <i class="material-icons menu-icon">repeat</i>
+                    <span class="menu-name">Pengeluaran Berulang</span>
+                </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Target keuangan"
+                    onclick="window.location.href='halaman-tujuan.html'">
+                    <i class="material-icons menu-icon">flag</i>
+                    <span class="menu-name">Target</span>
+                </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Dana darurat"
+                    onclick="window.location.href='halaman-tujuan.html'">
+                    <i class="material-icons menu-icon">emergency</i>
+                    <span class="menu-name">Dana Darurat</span>
+                </div>
+                <div class="menu-item" role="button" tabindex="0" aria-label="Laporan keuangan"
+                    onclick="window.location.href='halaman-tujuan.html'">
+                    <i class="material-icons menu-icon">bar_chart</i>
+                    <span class="menu-name">Laporan</span>
+                </div>
             </div>
 
             <div class="content-wrapper">
@@ -151,25 +161,28 @@
                     <div class="transactions">
                         <h2 class="section-title">Transaksi Terakhir</h2>
                         <?php if (empty($transaksi_terakhir)): ?>
-                                <p>Belum ada transaksi.</p>
+                            <p>Belum ada transaksi.</p>
                         <?php else: ?>
-                                <?php foreach ($transaksi_terakhir as $trx): ?>
-                                        <div class="transaction-card">
-                                            <div class="transaction-info">
-                                                <div class="category-icon" style="background-color: #eee"><span
-                                                        class="material-icons"><?php echo htmlspecialchars($trx['category_icon'] ?? 'help'); ?></span>
-                                                </div>
-                                                <div class="transaction-details">
-                                                    <p class="transaction-category">
-                                                        <?php echo htmlspecialchars($trx['category_name'] ?? 'Tanpa Kategori'); ?></p>
-                                                    <p class="transaction-time">
-                                                        <?php echo date('d M, H:i', strtotime($trx['transaction_date'])); ?></p>
-                                                </div>
-                                            </div>
-                                            <p class="transaction-amount <?php echo strtolower($trx['transaction_type']); ?>">
-                                                <?php echo 'Rp. ' . number_format($trx['amount'], 0, ',', '.'); ?></p>
+                            <?php foreach ($transaksi_terakhir as $trx): ?>
+                                <div class="transaction-card">
+                                    <div class="transaction-info">
+                                        <div class="category-icon" style="background-color: #eee"><span
+                                                class="material-icons"><?php echo htmlspecialchars($trx['category_icon'] ?? 'help'); ?></span>
                                         </div>
-                                <?php endforeach; ?>
+                                        <div class="transaction-details">
+                                            <p class="transaction-category">
+                                                <?php echo htmlspecialchars($trx['category_name'] ?? 'Tanpa Kategori'); ?>
+                                            </p>
+                                            <p class="transaction-time">
+                                                <?php echo date('d M, H:i', strtotime($trx['transaction_date'])); ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p class="transaction-amount <?php echo strtolower($trx['transaction_type']); ?>">
+                                        <?php echo 'Rp. ' . number_format($trx['amount'], 0, ',', '.'); ?>
+                                    </p>
+                                </div>
+                            <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -178,24 +191,25 @@
                     <div class="transactions" style="border-width: 1px 0px 1px 0px;">
                         <h2 class="section-title">Pengeluaran Terbesar</h2>
                         <?php if (empty($pengeluaran_terbesar)): ?>
-                                <p>Belum ada pengeluaran.</p>
+                            <p>Belum ada pengeluaran.</p>
                         <?php else: ?>
-                                <?php foreach ($pengeluaran_terbesar as $expense): ?>
-                                        <div class="transaction-card">
-                                            <div class="transaction-info">
-                                                <div class="category-icon" style="background-color: #eee"><i
-                                                        class="material-icons"><?php echo htmlspecialchars($expense['category_icon'] ?? 'help'); ?></i>
-                                                </div>
-                                                <div class="transaction-details">
-                                                    <p class="transaction-category">
-                                                        <?php echo htmlspecialchars($expense['category_name'] ?? 'Tanpa Kategori'); ?>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <p class="transaction-amount expense">
-                                                <?php echo 'Rp ' . number_format($expense['amount'], 0, ',', '.'); ?></p>
+                            <?php foreach ($pengeluaran_terbesar as $expense): ?>
+                                <div class="transaction-card">
+                                    <div class="transaction-info">
+                                        <div class="category-icon" style="background-color: #eee"><i
+                                                class="material-icons"><?php echo htmlspecialchars($expense['category_icon'] ?? 'help'); ?></i>
                                         </div>
-                                <?php endforeach; ?>
+                                        <div class="transaction-details">
+                                            <p class="transaction-category">
+                                                <?php echo htmlspecialchars($expense['category_name'] ?? 'Tanpa Kategori'); ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p class="transaction-amount expense">
+                                        <?php echo 'Rp ' . number_format($expense['amount'], 0, ',', '.'); ?>
+                                    </p>
+                                </div>
+                            <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>
