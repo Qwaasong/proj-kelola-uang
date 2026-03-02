@@ -6,7 +6,6 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../core/Response.php';
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../messages/UserMessage.php';
-require_once __DIR__ . '/../messages/UserErrorMessage.php';
 require_once __DIR__ . '/../controllers/UserLoginValidationController.php';
 require_once __DIR__ . '/../controllers/UserLoginLogicController.php';
 
@@ -14,12 +13,12 @@ $input = json_decode(file_get_contents("php://input"), true);
 
 $db = (new Database())->connect();
 
-// 1️⃣ VALIDATION
+// VALIDATION
 $validation = new UserLoginValidationController();
 $validate = $validation->validate($input);
 
 if (!$validate['status']) {
-    $message = UserErrorMessage::get(
+    $message = UserMessage::error(
         $validate['error_code'],
         $validate['field'] ?? null,
         $validate['value'] ?? null
@@ -27,12 +26,12 @@ if (!$validate['status']) {
     Response::error($message, 400);
 }
 
-// 2️⃣ LOGIC
+// LOGIC
 $logic = new UserLoginLogicController($db);
 $process = $logic->process($input);
 
 if (!$process['status']) {
-    $message = UserErrorMessage::get($process['error_code']);
+    $message = UserMessage::error($process['error_code']);
     Response::error($message, 401);
 }
 

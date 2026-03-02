@@ -6,7 +6,6 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../core/Response.php';
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../messages/UserMessage.php';
-require_once __DIR__ . '/../messages/UserErrorMessage.php';
 require_once __DIR__ . '/../controllers/UserValidationController.php';
 require_once __DIR__ . '/../controllers/UserLogicController.php';
 require_once __DIR__ . '/../controllers/UserDataController.php';
@@ -20,7 +19,7 @@ $validation = new UserValidationController();
 $validate = $validation->validate($input);
 
 if (!$validate['status']) {
-    $message = UserErrorMessage::get(
+    $message = UserMessage::error(
         $validate['error_code'],
         $validate['field'] ?? null,
         $validate['value'] ?? null
@@ -33,7 +32,7 @@ $logic = new UserLogicController($db);
 $process = $logic->process($input);
 
 if (!$process['status']) {
-    $message = UserErrorMessage::get($process['error_code']);
+    $message = UserMessage::error($process['error_code']);
     Response::error($message, 400);
 }
 
@@ -45,4 +44,4 @@ if (!$result['status']) {
     Response::error("Gagal menyimpan data", 500);
 }
 
-Response::success(UserMessage::get("CREATED"), null, 201);
+Response::success(UserMessage::text("CREATED"), null, 201);
