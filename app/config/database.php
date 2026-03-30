@@ -1,15 +1,23 @@
 <?php
 
 require_once __DIR__ . '/../core/Response.php';
+require_once __DIR__ . '/../core/Env.php';
 
 class Database
 {
-
-    private $host = "localhost";
-    private $db_name = "uangmu_app_db";
-    private $username = "root";
-    private $password = "";
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
     public $conn;
+
+    public function __construct()
+    {
+        $this->host = Env::get('DB_HOST', 'localhost');
+        $this->db_name = Env::get('DB_NAME', 'uangmu_app_db');
+        $this->username = Env::get('DB_USER', 'root');
+        $this->password = Env::get('DB_PASS', '');
+    }
 
     public function connect()
     {
