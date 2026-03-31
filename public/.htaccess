@@ -1,6 +1,13 @@
+# 1. Mengaktifkan fitur mod_rewrite pada server (Apache). 
+# Tanpa baris ini, perintah di bawahnya tidak akan jalan.
 RewriteEngine On
 
+# 2. Cek apakah permintaan (URL) bukan merujuk ke file fisik (seperti .jpg, .css, .js).
 RewriteCond %{REQUEST_FILENAME} !-f
+
+# 3. Cek apakah permintaan (URL) bukan merujuk ke folder/direktori fisik.
 RewriteCond %{REQUEST_FILENAME} !-d
 
+# 4. Jika kedua syarat di atas terpenuhi, kirim semua request ke index.php.
+# [QSA] menjaga parameter URL tetap ada, [L] menandakan ini aturan terakhir.
 RewriteRule ^ index.php [QSA,L]

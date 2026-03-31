@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Laeva</title>
+
+    <!-- Import Font Figtree dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Konfigurasi Tema Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#408A71',
+                        secondary: '#091413',
+                        inputbg: '#F3F3F3'
+                    },
+                    fontFamily: {
+                        sans: ['Figtree', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- React & ReactDOM (CDN) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel (CDN) untuk kompilasi JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body class="bg-white text-secondary font-sans antialiased">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const App = () => {
+            return (
+                <div className="min-h-screen flex flex-col lg:flex-row">
+                    
+                    {/* Kolom Kiri (Bagian Form) */}
+                    <div className="w-full lg:w-[45%] p-8 lg:p-16 flex flex-col min-h-screen">
+                        
+                        {/* Header / Logo */}
+                        <div className="flex items-center gap-2 mb-10 lg:mb-0">
+                            <div className="flex items-end h-6 gap-[2px]">
+                               <div className="w-2 h-3 bg-secondary"></div>
+                               <div className="w-3 h-5 border-t-4 border-r-4 border-secondary"></div>
+                            </div>
+                            <span className="text-2xl font-bold tracking-widest uppercase ml-1">LAEVA</span>
+                        </div>
+
+                        {/* Kontainer Form */}
+                        <div className="flex-grow flex flex-col justify-center w-full max-w-[380px] mx-auto py-8">
+                            
+                            {/* Judul */}
+                            <h1 className="text-[32px] font-semibold mb-1">Register</h1>
+                            <p className="text-[14px] mb-8 font-medium">
+                                Sudah Punya Akun ? <a href="#" className="text-primary hover:underline transition-all">Login</a>
+                            </p>
+
+                            {/* Form Input */}
+                            <form>
+                                {/* Input Username */}
+                                <div className="mb-4">
+                                    <label className="block text-[13px] mb-2 font-medium">Username</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Masukkan Username" 
+                                        className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
+                                    />
+                                    <span className="text-[11px] text-gray-400 mt-1.5 block font-medium">Disarankan Menggunakan Huruf dan Angka</span>
+                                </div>
+                                
+                                {/* Input Password */}
+                                <div className="mb-4">
+                                    <label className="block text-[13px] mb-2 font-medium">Password</label>
+                                    <input 
+                                        type="password" 
+                                        placeholder="Masukkan Password" 
+                                        className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
+                                    />
+                                    <span className="text-[11px] text-gray-400 mt-1.5 block font-medium">Disarankan Menggunakan Huruf dan Angka</span>
+                                </div>
+
+                                {/* Input Konfirmasi Password */}
+                                <div className="mb-6">
+                                    <label className="block text-[13px] mb-2 font-medium">Konfirmasi Password</label>
+                                    <input 
+                                        type="password" 
+                                        placeholder="Masukkan Password" 
+                                        className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
+                                    />
+                                    <span className="text-[11px] text-gray-400 mt-1.5 block font-medium">Disarankan Menggunakan Huruf dan Angka</span>
+                                </div>
+
+                                {/* Tombol Register */}
+                                <button 
+                                    type="button" 
+                                    className="w-full bg-primary text-white rounded-md py-3 text-[15px] font-medium hover:bg-opacity-90 transition-all mt-2"
+                                >
+                                    Register
+                                </button>
+                            </form>
+
+                            {/* Teks Footer */}
+                            <p className="text-center text-[12px] mt-8 font-medium px-4">
+                                I agree with Laeva's <a href="#" className="text-primary hover:underline">Privacy</a> and <a href="#" className="text-primary hover:underline">Terms of Services</a>
+                            </p>
+
+                        </div>
+                    </div>
+
+                    {/* Kolom Kanan (Bagian Ilustrasi) */}
+                    <div className="hidden lg:flex w-[55%] items-center justify-center p-12 relative overflow-hidden">
+                        
+                        {/* Ganti URL src dengan gambar ilustrasi Anda */}
+                        <img 
+                            src="https://raw.githubusercontent.com/unDrawAgency/illustrations/master/illustrations/reading_re_29f8.svg" 
+                            alt="Ilustrasi Register" 
+                            className="w-full max-w-[500px] h-auto object-contain z-10"
+                        />
+
+                    </div>
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
