@@ -6,6 +6,7 @@ import Loading from '../components/Loading';
 const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
+const Dashboard = lazy(() => import('../pages/Dashboard'));
 
 /**
  * Wrapper untuk mendukung Lazy Loading dengan Suspense dan ProgressBar
@@ -30,10 +31,15 @@ const router = createBrowserRouter([
     element: React.createElement(Loadable(Register)),
   },
   {
+    path: '/dashboard',
+    element: React.createElement(Loadable(Dashboard)),
+  },
+  {
     path: '*',
     element: <Navigate to="/" replace />,
   },
 ]);
+
 
 
 export default router;

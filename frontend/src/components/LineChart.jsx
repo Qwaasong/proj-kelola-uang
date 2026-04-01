@@ -1,0 +1,132 @@
+import { useEffect, useRef } from 'react';
+import { Info } from '@phosphor-icons/react';
+import Chart from 'chart.js/auto';
+
+// Data transaksi hari ini untuk ditampilkan
+const todayTransactions = [
+    { label: 'Makan dan Minum', amount: 'Rp 100.000' },
+    { label: 'Transportasi', amount: 'Rp 100.000' },
+    { label: 'Lainnya', amount: 'Rp 12.000' },
+];
+
+/**
+ * Komponen LineChart — Grafik area transaksi pemasukan dan pengeluaran hari ini.
+ * Menggunakan Chart.js dengan gradient fill dan lifecycle cleanup.
+ */
+const LineChart = () => {
+    const chartRef = useRef(null);
+    const chartInstance = useRef(null);
+
+    useEffect(() => {
+        if (chartInstance.current) chartInstance.current.destroy();
+        const ctx = chartRef.current.getContext('2d');
+
+        // Gradient Biru (Pemasukan)
+        const gradBlue = ctx.createLinearGradient(0, 0, 0, 150);
+        gradBlue.addColorStop(0, 'rgba(128, 147, 241, 0.2)');
+        gradBlue.addColorStop(1, 'rgba(128, 147, 241, 0)');
+
+        // Gradient Merah (Pengeluaran)
+        const gradRed = ctx.createLinearGradient(0, 0, 0, 150);
+        gradRed.addColorStop(0, 'rgba(255, 138, 138, 0.2)');
+        gradRed.addColorStop(1, 'rgba(255, 138, 138, 0)');
+
+        chartInstance.current = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['12 AM', '8 AM', '4 PM', '8 PM'],
+                datasets: [
+                    {
+                        label: 'Pengeluaran',
+                        data: [125, 80, 175, 105],
+                        borderColor: '#FF8A8A',
+                        backgroundColor: gradRed,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                    },
+                    {
+                        label: 'Pemasukan',
+                        data: [42, 55, 80, 52],
+                        borderColor: '#8093F1',
+                        backgroundColor: gradBlue,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 200,
+                        ticks: { stepSize: 100, font: { size: 10, family: 'Figtree' }, color: '#9CA3AF' },
+                        border: { display: false },
+                        grid: { color: '#E5E7EB', tickLength: 0 }
+                    },
+                    x: {
+                        grid: { color: '#E5E7EB', borderDash: [4, 4] },
+                        border: { color: '#E5E7EB' },
+                        ticks: { font: { size: 10, family: 'Figtree' }, color: '#6B7280', padding: 10 }
+                    }
+                }
+            }
+        });
+
+        return () => { if (chartInstance.current) chartInstance.current.destroy(); };
+    }, []);
+
+    return (
+        <div className="bg-white p-6 rounded-[20px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] w-full lg:w-[40%] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                    <h2 className="text-[16px] font-semibold">Transaksi Hari Ini</h2>
+                    <Info size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                </div>
+                <button className="bg-secondary text-white text-[12px] px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition">
+                    Lihat Laporan
+                </button>
+            </div>
+
+            {/* Total Transaksi */}
+            <div className="mb-5">
+                <p className="text-[28px] font-semibold flex items-baseline gap-1">
+                    <span className="text-sm text-gray-400 font-medium">Rp</span> 985.000
+                </p>
+            </div>
+
+            {/* Daftar Kategori Transaksi */}
+            <div className="space-y-3 mb-6 text-[13px] font-medium">
+                {todayTransactions.map((trx, idx) => (
+                    <div key={idx} className="flex justify-between">
+                        <span className="text-gray-600">{trx.label}</span>
+                        <span>{trx.amount}</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* Grafik */}
+            <div className="flex-grow w-full h-[150px] relative mt-auto">
+                <canvas ref={chartRef}></canvas>
+            </div>
+
+            {/* Legenda */}
+            <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
+                    <span className="w-4 h-[2px] bg-[#8093F1] inline-block"></span> Pemasukan
+                </div>
+                <div className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
+                    <span className="w-4 h-[2px] bg-[#FF8A8A] inline-block"></span> Pengeluaran
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default LineChart;
