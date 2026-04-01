@@ -1,12 +1,15 @@
 import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Loading from '../components/Loading';
+import App from '../App';
 
 // Lazy loading komponen halaman
 const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Dompet = lazy(() => import('../pages/Dompet'));
+const Transaksi = lazy(() => import('../pages/Transaksi'));
 
 /**
  * Wrapper untuk mendukung Lazy Loading dengan Suspense dan ProgressBar
@@ -31,8 +34,22 @@ const router = createBrowserRouter([
     element: React.createElement(Loadable(Register)),
   },
   {
-    path: '/dashboard',
-    element: React.createElement(Loadable(Dashboard)),
+    // Dashboard Layout (App.jsx) menampung Sidebar yang Persistent
+    element: <App />,
+    children: [
+      {
+        path: '/dashboard',
+        element: React.createElement(Loadable(Dashboard)),
+      },
+      {
+        path: '/dompet',
+        element: React.createElement(Loadable(Dompet)),
+      },
+      {
+        path: '/transaksi',
+        element: React.createElement(Loadable(Transaksi)),
+      },
+    ]
   },
   {
     path: '*',
