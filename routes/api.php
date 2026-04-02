@@ -20,6 +20,10 @@ switch ($request_uri) {
         require_once '../app/handlers/transaction_handler.php';
         break;
 
+    case '/api/target':
+        require_once '../app/handlers/target_handler.php';
+        break;
+
     // Default jika route tidak ditemukan
     default:
         require_once '../app/core/Response.php';
