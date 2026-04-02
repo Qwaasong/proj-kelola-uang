@@ -1,14 +1,32 @@
 <?php
-// Mendapatkan URI dari request
-$request_uri = $_SERVER['REQUEST_URI'];
+// 1. Tambahkan Header CORS di baris paling atas
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
-// Menghapus query string jika ada (misal: /api/report?user_id=1 menjadi /api/report)
-$request_uri = explode('?', $request_uri)[0];
+// 2. Tangani request OPTIONS (Preflight dari browser Vite)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-// Routing API - Menghubungkan URL ke File Handler yang Sesuai
-switch ($request_uri) {
+// 3. Perbaiki Logika Routing agar mengabaikan folder XAMPP
+$request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Ekstrak hanya bagian yang dimulai dari '/api'
+$api_endpoint = '';
+if (preg_match('/\/api(\/.*)?$/', $request_uri, $matches)) {
+    $api_endpoint = '/api' . ($matches[1] ?? '');
+} else {
+    $api_endpoint = $request_uri;
+}
+
+// Hapus slash di akhir jika ada agar seragam
+$api_endpoint = rtrim($api_endpoint, '/');
+
+// 4. Routing API menggunakan endpoint yang sudah dibersihkan
+switch ($api_endpoint) {
     
-    // --- FITUR DASAR (AUTH) ---
     case '/api/user':
         require_once '../app/handlers/user_handler.php';
         break;
@@ -17,38 +35,26 @@ switch ($request_uri) {
         require_once '../app/handlers/login_handler.php';
         break;
 
-
-    // --- TAHAP 2: TRANSAKSI (PEMASUKAN, PENGELUARAN, TABUNGAN) ---
     case '/api/transaction':
         require_once '../app/handlers/transaction_handler.php';
         break;
 
-
-    // --- TAHAP 3: TARGET FINANSIAL (RENCANA MENABUNG) ---
     case '/api/target':
         require_once '../app/handlers/target_handler.php';
         break;
 
-
-    // --- TAHAP 4: TRANSAKSI BERULANG (GAJI/TAGIHAN OTOMATIS) ---
     case '/api/recurring':
         require_once '../app/handlers/recurring_handler.php';
         break;
 
-
-    // --- TAHAP 5: LAPORAN & FILTER RIWAYAT ---
     case '/api/report':
         require_once '../app/handlers/report_handler.php';
         break;
 
-
-    // --- TAHAP 6: ANALISIS KEUANGAN DENGAN AI (GEMINI) ---
     case '/api/ai-analyst':
         require_once '../app/handlers/ai_handler.php';
         break;
 
-
-    // --- DEFAULT: JIKA ENDPOINT TIDAK DITEMUKAN ---
     default:
         require_once '../app/core/Response.php';
         Response::error(404, "Endpoint API tidak ditemukan. Periksa kembali URL Anda.");
