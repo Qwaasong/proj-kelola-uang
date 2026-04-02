@@ -1,8 +1,10 @@
 <?php
 
+// Panggil JwtHelper
+require_once __DIR__ . '/../core/JwtHelper.php';
+
 class UserLoginLogicController
 {
-
     private $model;
 
     public function __construct($db)
@@ -28,16 +30,23 @@ class UserLoginLogicController
             ];
         }
 
-        // Set session variables
-        session_start();
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
+        // --- MENGGUNAKAN JWT TOKEN SEBAGAI PENGGANTI SESSION ---
+        
+        // 1. Siapkan data yang mau dibungkus di dalam Token
+        $payload = [
+            "user_id" => $user['id'],
+            "username" => $user['username']
+        ];
+
+        // 2. Buat Token menggunakan JwtHelper
+        $token = JwtHelper::generateToken($payload);
 
         return [
             "status" => true,
             "data" => [
                 "id" => $user['id'],
-                "username" => $user['username']
+                "username" => $user['username'],
+                "token" => $token // Kirimkan token ini ke frontend
             ]
         ];
     }
