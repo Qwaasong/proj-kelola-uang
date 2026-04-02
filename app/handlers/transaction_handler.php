@@ -2,9 +2,9 @@
 
 header("Content-Type: application/json");
 
-// Gunakan __DIR__ agar path selalu absolut dan tidak error
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../core/Response.php';
+require_once __DIR__ . '/../core/AuthMiddleware.php'; // <-- Panggil Middleware di sini
 require_once __DIR__ . '/../controllers/TransactionValidationController.php';
 require_once __DIR__ . '/../models/TransactionModel.php';
 
@@ -13,7 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     Response::error("Method tidak diizinkan. Gunakan POST.", 405);
 }
 
-// 2. Baca data JSON dari Frontend
+// 2. JALANKAN SATPAM (MIDDLEWARE)
+// Jika token tidak valid, kode akan otomatis terhenti di sini dan mengirim response error 401.
+// Jika valid, kita simpan data usernya (id, username) ke variabel $loggedInUser
+$loggedInUser = AuthMiddleware::authenticate();
+
+// 3. Baca data JSON dari Frontend
 $data = json_decode(file_get_contents("php://input"), true);
 if (empty($data)) {
     $data = $_POST;
@@ -23,19 +28,19 @@ if (empty($data)) {
     Response::error("Data transaksi tidak boleh kosong.", 400);
 }
 
-// 3. Gunakan Try-Catch Global untuk seluruh proses
+// Opsional tapi penting: Pastikan ID User yang masuk ke database adalah ID milik user yang sedang login (bukan dari inputan frontend yang bisa dimanipulasi)
+$data['user_id'] = $loggedInUser['user_id']; 
+
+// 4. Gunakan Try-Catch Global
 try {
     // Validasi Input
     $validationError = TransactionValidationController::validate($data);
     if ($validationError) {
-        // Menggunakan Response::error dari core kamu
         Response::error($validationError, 400);
     }
 
     // Simpan ke Database
     $database = new Database();
-    
-    // Fallback otomatis jika kamu menggunakan connect() atau getConnection() di file database.php
     $db = method_exists($database, 'connect') ? $database->connect() : $database->getConnection();
     
     $model = new TransactionModel($db);
