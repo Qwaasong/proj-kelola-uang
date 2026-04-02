@@ -1,19 +1,28 @@
 <?php
+// Mendapatkan URI dari request
+$request_uri = $_SERVER['REQUEST_URI'];
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Menghapus query string jika ada (misal: /api/user?id=1 menjadi /api/user)
+$request_uri = explode('?', $request_uri)[0];
 
-switch ($uri) {
+// Routing API
+switch ($request_uri) {
     case '/api/user':
-        require '../app/handlers/user_handler.php';
+        require_once '../app/handlers/user_handler.php';
         break;
 
     case '/api/login':
-        require '../app/handlers/login_handler.php';
+        require_once '../app/handlers/login_handler.php';
         break;
 
+    // TAHAP 2: Rute untuk Transaksi (Awal, Pemasukan, Pengeluaran, Tabungan)
+    case '/api/transaction':
+        require_once '../app/handlers/transaction_handler.php';
+        break;
+
+    // Default jika route tidak ditemukan
     default:
-        http_response_code(404);
-        header('Content-Type: application/json');
-        echo json_encode(["status" => false, "message" => "API endpoints not found"]);
+        require_once '../app/core/Response.php';
+        Response::error(404, "Endpoint tidak ditemukan.");
         break;
 }
