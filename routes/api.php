@@ -24,6 +24,10 @@ switch ($request_uri) {
         require_once '../app/handlers/target_handler.php';
         break;
 
+    case '/api/recurring':
+        require_once '../app/handlers/recurring_handler.php';
+        break;
+
     // Default jika route tidak ditemukan
     default:
         require_once '../app/core/Response.php';
