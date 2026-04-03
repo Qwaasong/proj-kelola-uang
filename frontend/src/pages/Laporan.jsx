@@ -107,6 +107,7 @@ const TrendAreaChart = ({ period }) => {
                 ],
             },
             options: {
+                animation: false,
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
@@ -127,6 +128,7 @@ const TrendAreaChart = ({ period }) => {
                         ticks: {
                             font: { size: 11, family: 'Figtree' },
                             color: '#9CA3AF',
+                            maxTicksLimit: 4,
                             callback: (val) => `${(val / 1000000).toFixed(1)}jt`,
                         },
                         border: { display: false },

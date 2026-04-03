@@ -11,6 +11,7 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Dompet = lazy(() => import('../pages/Dompet'));
 const Transaksi = lazy(() => import('../pages/Transaksi'));
 const DanaDarurat = lazy(() => import('../pages/DanaDarurat'));
+const Goal = lazy(() => import('../pages/Goal'));
 const Laporan = lazy(() => import('../pages/Laporan'));
 
 /**
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: '/laporan',
         element: React.createElement(Loadable(Laporan)),
+      },
+      {
+        path: '/goal',
+        element: React.createElement(Loadable(Goal)),
       },
     ]
   },

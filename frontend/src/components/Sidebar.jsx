@@ -5,6 +5,7 @@ import {
     ArrowsLeftRightIcon, 
     StackIcon,      
     FileTextIcon,      
+    FlagIcon,      
     QuestionIcon,       
     SignOutIcon,  
     CaretLeftIcon,     
@@ -16,6 +17,7 @@ const mainMenus = [
     { id: 2, name: 'Dompet', icon: WalletIcon, path: '/dompet' },
     { id: 3, name: 'Transaksi', icon: ArrowsLeftRightIcon, path: '/transaksi' },
     { id: 4, name: 'Dana Darurat', icon: StackIcon, path: '/dana-darurat' },
+    { id: 8, name: 'Goal', icon: FlagIcon, path: '/goal' },
     { id: 5, name: 'Laporan', icon: FileTextIcon, path: '/laporan' },
 ];
 
