@@ -1,42 +1,44 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import IlustrasiLoginImg from '../assets/IlustrasiLogin.png';
 import AuthHeader from '../components/AuthHeader';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import useApi from '../hooks/useApi';
 
 /**
  * Komponen Login untuk aplikasi Kelola Uang (Laeva)
  * Menggunakan standar React Functional Component dengan Tailwind CSS
  */
 const Login = () => {
+    const navigate = useNavigate();
+    const [login, { loading, error }] = useApi();
+
     // State untuk menangkap input user
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     /**
      * Fungsi handle submit form
-     * Di sini adalah tempat untuk melakukan API call nantinya
      */
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Logika API Call (Placeholder)
-        console.log("Memulai proses login untuk:", { username, password });
-        
-        // Contoh API Call:
-        /*
-        fetch('/api/login', {
-            method: 'POST',
-            body: JSON.stringify({ username, password }),
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(err => console.error(err));
-        */
-        
-        alert(`Login button clicked for user: ${username}`);
+        try {
+            const response = await login('POST', '/login', { username, password });
+            console.log("Login sukses:", response);
+            
+            // Simpan token jika ada (Contoh)
+            if (response.token) {
+                localStorage.setItem('auth_token', response.token);
+            }
+
+            // Redirect ke dashboard
+            navigate('/dashboard');
+        } catch (err) {
+            // Error ditangani oleh useApi (state error)
+            console.error("Login gagal:", err.message);
+        }
     };
 
     return (

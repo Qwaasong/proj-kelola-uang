@@ -26,7 +26,7 @@ const Loadable = (Component) => (props) => (
 const router = createBrowserRouter([
   {
     path: '/',
-    element: React.createElement(Loadable(Home)),
+    element: <Navigate to="/login" replace />,
   },
   {
     path: '/login',
