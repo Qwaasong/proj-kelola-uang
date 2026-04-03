@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 10 Sep 2025 pada 05.26
+-- Waktu pembuatan: 02 Apr 2026 pada 05.12
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -69,6 +69,53 @@ CREATE TABLE `emergency_fund` (
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `pemasukan_berulang`
+--
+
+CREATE TABLE `pemasukan_berulang` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `nama_pemasukan` varchar(100) NOT NULL,
+  `jumlah` decimal(15,2) NOT NULL,
+  `frekuensi` enum('Mingguan','Bulanan') NOT NULL,
+  `tanggal_mulai` date NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `pengeluaran_berulang`
+--
+
+CREATE TABLE `pengeluaran_berulang` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `nama_pengeluaran` varchar(100) NOT NULL,
+  `jumlah` decimal(15,2) NOT NULL,
+  `frekuensi` enum('Mingguan','Bulanan') NOT NULL,
+  `tanggal_mulai` date NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `target_finansial`
+--
+
+CREATE TABLE `target_finansial` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `nama_target` varchar(100) NOT NULL,
+  `jumlah_target` decimal(15,2) NOT NULL,
+  `tanggal_tercapai` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `transactions`
 --
 
@@ -77,7 +124,8 @@ CREATE TABLE `transactions` (
   `user_id` int(11) NOT NULL,
   `account_id` int(11) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
-  `transaction_type` enum('Pemasukan','Pengeluaran','Koreksi Saldo') NOT NULL,
+  `target_id` int(11) DEFAULT NULL,
+  `transaction_type` enum('Awal','Pemasukan','Pengeluaran','Tabungan','Koreksi Saldo') NOT NULL,
   `amount` decimal(15,2) NOT NULL,
   `description` text DEFAULT NULL,
   `transaction_date` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -105,7 +153,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `first_name`, `last_name`, `password`, `created_at`) VALUES
-(1, 'admin', NULL, NULL, '$2y$10$VvvHJSc/dM3AsqK2ztjCN.QM9iBYA5T7rrlLHsNn/h5H05eIIXL/O', '2025-09-10 03:17:47');
+(1, 'admin', NULL, NULL, '$2y$10$VvvHJSc/dM3AsqK2ztjCN.QM9iBYA5T7rrlLHsNn/h5H05eIIXL/O', '2026-04-02 03:10:38');
 
 --
 -- Indexes for dumped tables
@@ -133,13 +181,35 @@ ALTER TABLE `emergency_fund`
   ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
+-- Indeks untuk tabel `pemasukan_berulang`
+--
+ALTER TABLE `pemasukan_berulang`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indeks untuk tabel `pengeluaran_berulang`
+--
+ALTER TABLE `pengeluaran_berulang`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indeks untuk tabel `target_finansial`
+--
+ALTER TABLE `target_finansial`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indeks untuk tabel `transactions`
 --
 ALTER TABLE `transactions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `account_id` (`account_id`),
-  ADD KEY `category_id` (`category_id`);
+  ADD KEY `category_id` (`category_id`),
+  ADD KEY `target_id` (`target_id`);
 
 --
 -- Indeks untuk tabel `users`
@@ -168,6 +238,24 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT untuk tabel `emergency_fund`
 --
 ALTER TABLE `emergency_fund`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `pemasukan_berulang`
+--
+ALTER TABLE `pemasukan_berulang`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `pengeluaran_berulang`
+--
+ALTER TABLE `pengeluaran_berulang`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `target_finansial`
+--
+ALTER TABLE `target_finansial`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -205,12 +293,31 @@ ALTER TABLE `emergency_fund`
   ADD CONSTRAINT `emergency_fund_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Ketidakleluasaan untuk tabel `pemasukan_berulang`
+--
+ALTER TABLE `pemasukan_berulang`
+  ADD CONSTRAINT `pemasukan_berulang_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `pengeluaran_berulang`
+--
+ALTER TABLE `pengeluaran_berulang`
+  ADD CONSTRAINT `pengeluaran_berulang_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `target_finansial`
+--
+ALTER TABLE `target_finansial`
+  ADD CONSTRAINT `target_finansial_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Ketidakleluasaan untuk tabel `transactions`
 --
 ALTER TABLE `transactions`
   ADD CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `transactions_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `transactions_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `transactions_ibfk_4` FOREIGN KEY (`target_id`) REFERENCES `target_finansial` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
