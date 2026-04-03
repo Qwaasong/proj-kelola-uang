@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import TopHeader from './components/TopHeader';
 
 /**
  * Komponen App (Main Layout)
@@ -21,7 +22,8 @@ const App = () => {
             />
 
             {/* Area Konten Utama (Outlet) */}
-            <div className="flex-1 flex flex-col h-screen overflow-y-auto">
+            <div className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto">
+                <TopHeader />
                 <Outlet />
             </div>
 

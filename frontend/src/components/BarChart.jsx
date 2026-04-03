@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { Info } from '@phosphor-icons/react';
+import { InfoIcon } from '@phosphor-icons/react';
 import Chart from 'chart.js/auto';
+import Button from './Button';
 
 /**
  * Komponen BarChart — Distribusi Dana berdasarkan kategori.
@@ -51,15 +52,13 @@ const BarChart = () => {
     }, []);
 
     return (
-        <div className="bg-white p-6 rounded-[20px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] w-full lg:w-[60%] flex flex-col">
+        <div className="relative overflow-hidden rounded-xl bg-white p-6 ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] dark:bg-gray-900 dark:ring-white/10 dark:shadow-none transition duration-300 hover:ring-gray-950/10 w-full xl:col-span-3 flex flex-col">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
                     <h2 className="text-[16px] font-semibold">Distribusi Dana</h2>
-                    <Info size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                    <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
-                <button className="bg-secondary text-white text-[12px] px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition">
-                    Lihat Laporan
-                </button>
+                <Button size="sm" variant="secondary">Lihat Laporan</Button>
             </div>
             <div className="flex-grow w-full h-[250px] relative">
                 <canvas ref={chartRef}></canvas>

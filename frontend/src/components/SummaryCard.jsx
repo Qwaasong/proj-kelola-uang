@@ -3,15 +3,32 @@
  * Props:
  * - title: string — judul kartu (misal: "Pemasukan")
  * - amount: string — nominal uang yang ditampilkan
- * - icon: ReactNode — ikon opsional untuk variasi visual
  */
-const SummaryCard = ({ title, amount }) => (
-    <div className="bg-white p-6 rounded-[20px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] w-full hover:shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] transition-shadow cursor-pointer">
-        <h3 className="text-sm font-semibold mb-2">{title}</h3>
-        <p className="text-[28px] font-semibold flex items-baseline gap-1">
-            <span className="text-sm text-gray-400 font-medium">Rp</span> {amount}
-        </p>
+const SummaryCard = ({ title, amount, showRp = true, suffix = "" }) => (
+    <div className="
+    relative overflow-hidden rounded-xl bg-white p-6 
+    ring-1 ring-gray-950/5 
+    shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)]
+    dark:bg-gray-900 dark:ring-white/10 dark:shadow-none
+    transition duration-300 hover:ring-gray-950/10
+  ">
+        <div className="flex flex-col gap-y-2">
+            {/* Label/Title */}
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {title}
+            </h3>
+
+            {/* Value */}
+            <div className="flex items-baseline gap-1">
+                {showRp && <span className="text-sm font-semibold text-gray-400">Rp</span>}
+                <span className="text-3xl font-bold tracking-tight text-gray-950 dark:text-white">
+                    {amount}
+                </span>
+                {suffix && <span className="ml-1 text-sm font-semibold text-gray-400">{suffix}</span>}
+            </div>
+        </div>
     </div>
 );
+
 
 export default SummaryCard;

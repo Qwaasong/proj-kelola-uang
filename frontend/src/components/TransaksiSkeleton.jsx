@@ -58,15 +58,20 @@ const TransaksiSkeleton = () => (
                 <Skeleton width={140} height={38} borderRadius={8} />
             </div>
 
-            {/* Table Container Skeleton */}
-            <div className="px-8 pb-10 w-full max-w-[1400px]">
-                <div className="bg-white border border-borderLight rounded-2xl flex flex-col w-full shadow-sm">
+            {/* Table Container Skeleton (Filament Style) */}
+            <div className="px-8 pb-10 w-full max-w-[1450px]">
+                <div className="
+                    relative overflow-hidden bg-white rounded-xl 
+                    ring-1 ring-gray-950/5 
+                    shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)]
+                    flex flex-col w-full
+                ">
                     
                     <TableToolbarSkeleton />
 
                     <div className="w-full overflow-x-auto">
                         <table className="w-full min-w-[700px] text-left">
-                            <thead className="bg-bgMain border-b border-borderLight">
+                            <thead className="bg-[#FAFAFA] border-b border-gray-100">
                                 <tr>
                                     {Array.from({ length: 7 }).map((_, i) => (
                                         <th key={i} className="py-3 px-6">
@@ -84,10 +89,10 @@ const TransaksiSkeleton = () => (
                     </div>
 
                     {/* Footer Pagination Skeleton */}
-                    <div className="flex justify-between items-center px-5 py-3 border-t border-borderLight bg-white rounded-b-2xl">
+                    <div className="flex justify-between items-center px-5 py-3 border-t border-gray-100 bg-[#FAFAFA]/50">
                         <Skeleton width={200} height={12} />
                         <div className="flex gap-1.5">
-                            {Array.from({ length: 5 }).map((_, i) => (
+                            {Array.from({ length: 3 }).map((_, i) => (
                                 <Skeleton key={i} width={28} height={28} borderRadius={4} />
                             ))}
                         </div>

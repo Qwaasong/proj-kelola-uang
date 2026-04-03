@@ -36,14 +36,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
     return (
         <div
-            className={`bg-white h-screen border-r border-gray-100 flex flex-col flex-shrink-0 relative transition-all duration-300 ease-in-out z-20 ${
+            className={`bg-white h-screen border-r border-gray-300 flex flex-col flex-shrink-0 relative transition-all duration-300 ease-in-out z-20 ${
                 isOpen ? 'w-[260px]' : 'w-[88px]'
             }`}
         >
             {/* Tombol Collapse */}
             <div
                 onClick={toggleSidebar}
-                className="absolute -right-3.5 top-8 w-7 h-7 bg-white border border-gray-200 rounded-full flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-50 transition-colors z-30"
+                className="absolute -right-3.5 top-8 w-7 h-7 bg-white border border-gray-300 rounded-full flex items-center justify-center cursor-pointer shadow-sm hover:bg-gray-50 transition-colors z-30"
             >
                 {isOpen ? (
                     <CaretLeftIcon size={14} weight="bold" className="text-gray-400" />
@@ -94,7 +94,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 <div className="mb-2 overflow-hidden">
                     <div className="px-8 text-left">
                         <p
-                            className={`font-bold text-gray-400 uppercase tracking-widest text-[11px] transition-transform duration-300 ${
+                            className={`font-light text-gray-500 uppercase tracking-widest text-[11px] transition-transform duration-300 ${
                                 isOpen ? 'translate-x-0' : '-translate-x-[6px]'
                             }`}
                         >

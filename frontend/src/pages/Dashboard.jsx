@@ -1,6 +1,7 @@
 import SummaryCard from '../components/SummaryCard';
 import BarChart from '../components/BarChart';
 import LineChart from '../components/LineChart';
+import Button from '../components/Button';
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import useFirstLoad from '../hooks/useFirstLoad';
 
@@ -25,22 +26,25 @@ const Dashboard = () => {
     }
 
     return (
-        <>
-            {/* Header Halaman */}
-            <div className="flex justify-between items-center px-8 py-8 flex-shrink-0">
-                <h1 className="text-2xl font-semibold text-secondary">Dashboard</h1>
-                <div className="flex gap-3">
-                    <button className="bg-primary text-white text-[13px] px-5 py-2.5 rounded-lg font-medium hover:bg-opacity-90 transition shadow-sm">
-                        Tambah Transaksi
-                    </button>
-                    <button className="bg-secondary text-white text-[13px] px-5 py-2.5 rounded-lg font-medium hover:bg-opacity-90 transition shadow-sm">
-                        Transfer Dana
-                    </button>
+        <div className="flex flex-col h-full overflow-y-auto w-full">
+            
+            {/* Header / Kontrol Ringkasan */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center px-8 py-8 gap-4 flex-shrink-0">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-semibold text-secondary">Dashboard</h1>
+                    <p className="text-sm text-gray-500 font-medium whitespace-nowrap overflow-hidden text-ellipsis max-w-[300px] sm:max-w-none">
+                        Ringkasan aktivitas keuangan dan statistik aset anda
+                    </p>
+                </div>
+                
+                <div className="flex items-center gap-3 w-full lg:w-auto">
+                    <Button size="md">Tambah Transaksi</Button>
+                    <Button size="md" variant="secondary">Transfer Dana</Button>
                 </div>
             </div>
 
             {/* Konten Grid */}
-            <div className="px-8 pb-10 flex flex-col gap-6 w-full max-w-[1400px]">
+            <div className="px-8 pb-10 flex flex-col gap-6 w-full">
 
                 {/* Kartu Ringkasan */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -54,13 +58,13 @@ const Dashboard = () => {
                 </div>
 
                 {/* Grafik */}
-                <div className="flex flex-col xl:flex-row gap-6 items-stretch">
+                <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
                     <BarChart />
                     <LineChart />
                 </div>
                 
             </div>
-        </>
+        </div>
     );
 };
 

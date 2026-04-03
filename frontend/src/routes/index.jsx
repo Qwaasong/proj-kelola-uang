@@ -10,6 +10,8 @@ const Register = lazy(() => import('../pages/Register'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Dompet = lazy(() => import('../pages/Dompet'));
 const Transaksi = lazy(() => import('../pages/Transaksi'));
+const DanaDarurat = lazy(() => import('../pages/DanaDarurat'));
+const Laporan = lazy(() => import('../pages/Laporan'));
 
 /**
  * Wrapper untuk mendukung Lazy Loading dengan Suspense dan ProgressBar
@@ -48,6 +50,14 @@ const router = createBrowserRouter([
       {
         path: '/transaksi',
         element: React.createElement(Loadable(Transaksi)),
+      },
+      {
+        path: '/dana-darurat',
+        element: React.createElement(Loadable(DanaDarurat)),
+      },
+      {
+        path: '/laporan',
+        element: React.createElement(Loadable(Laporan)),
       },
     ]
   },

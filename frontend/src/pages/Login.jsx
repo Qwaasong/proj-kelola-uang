@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import IlustrasiLoginImg from '../assets/IlustrasiLogin.png';
 import AuthHeader from '../components/AuthHeader';
+import Button from '../components/Button';
+import Input from '../components/Input';
 
 /**
  * Komponen Login untuk aplikasi Kelola Uang (Laeva)
@@ -57,36 +59,34 @@ const Login = () => {
 
                     {/* Form Input */}
                     <form className="space-y-5" onSubmit={handleSubmit}>
-                        <div>
-                            <label className="block text-[13px] mb-2 font-medium">Username</label>
-                            <input 
-                                type="text" 
-                                placeholder="Masukkan Username" 
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
-                                required
-                            />
-                        </div>
+                        <Input 
+                            label="Username"
+                            type="text" 
+                            placeholder="Masukkan Username" 
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            size="lg"
+                            required
+                        />
                         
-                        <div>
-                            <label className="block text-[13px] mb-2 font-medium">Password</label>
-                            <input 
-                                type="password" 
-                                placeholder="Masukkan Password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
-                                required
-                            />
-                        </div>
+                        <Input 
+                            label="Password"
+                            type="password" 
+                            placeholder="Masukkan Password" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            size="lg"
+                            required
+                        />
 
-                        <button 
+                        <Button 
                             type="submit" 
-                            className="w-full bg-primary text-white rounded-md py-3 text-[15px] font-medium hover:bg-opacity-90 transition-all mt-4"
+                            size="lg"
+                            isFullWidth
+                            className="mt-4"
                         >
                             Login
-                        </button>
+                        </Button>
                     </form>
 
                     {/* Teks Footer */}

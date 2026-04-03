@@ -1,5 +1,7 @@
 import DompetSkeleton from '../components/DompetSkeleton';
+import Button from '../components/Button';
 import useFirstLoad from '../hooks/useFirstLoad';
+import { WalletIcon } from '@phosphor-icons/react';
 
 // --- Data Dummy Dompet ---
 // Ganti dengan data dari API nantinya
@@ -10,30 +12,45 @@ const walletsData = [
 
 // --- KOMPONEN: Card Dompet ---
 const WalletCard = ({ title, amount, onEdit, onTransfer }) => (
-    <div className="bg-white py-5 px-6 rounded-[20px] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] w-full flex flex-col justify-between hover:shadow-[0_8px_30px_-10px_rgba(0,0,0,0.08)] transition-shadow">
+    <div className="
+    relative overflow-hidden bg-white p-6 rounded-xl 
+    ring-1 ring-gray-950/5 
+    shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)]
+    dark:bg-gray-900 dark:ring-white/10 dark:shadow-none
+    transition duration-300 hover:ring-gray-950/10
+    w-full flex flex-col justify-between
+  ">
         
         {/* Info Dompet */}
-        <div className="mb-5">
-            <h3 className="text-[14px] font-medium mb-1">{title}</h3>
-            <p className="text-[28px] font-semibold flex items-baseline gap-1">
-                <span className="text-[14px] text-gray-400 font-medium">Rp</span> {amount}
-            </p>
+        <div className="flex flex-col gap-y-2">
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {title}
+            </h3>
+            <div className="flex items-baseline gap-1">
+                <span className="text-sm font-semibold text-gray-400">Rp</span>
+                <span className="text-3xl font-bold tracking-tight text-gray-950 dark:text-white">
+                    {amount}
+                </span>
+            </div>
         </div>
 
         {/* Tombol Aksi */}
-        <div className="flex gap-3">
-            <button
+        <div className="flex gap-3 mt-4">
+            <Button
                 onClick={onEdit}
-                className="flex-1 bg-primary text-white text-[13px] py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
+                size="md"
+                className="flex-1"
             >
                 Edit
-            </button>
-            <button
+            </Button>
+            <Button
                 onClick={onTransfer}
-                className="flex-1 bg-secondary text-white text-[13px] py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
+                variant="secondary"
+                size="md"
+                className="flex-1"
             >
                 Transfer Dana
-            </button>
+            </Button>
         </div>
     </div>
 );
@@ -72,13 +89,19 @@ const Dompet = () => {
         <>
             {/* Header */}
             <div className="flex justify-between items-center px-8 py-8 flex-shrink-0">
-                <h1 className="text-2xl font-semibold text-secondary">Dompet</h1>
-                <button
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-semibold text-secondary">Dompet</h1>
+                    <p className="text-sm text-gray-500 font-medium tracking-tight">
+                        Atur sumber dana dan simpanan dengan mudah
+                    </p>
+                </div>
+                <Button
                     onClick={handleTambahDompet}
-                    className="bg-primary text-white text-[13px] px-5 py-2.5 rounded-lg font-medium hover:bg-opacity-90 transition shadow-sm"
+                    size="md"
                 >
+                    <WalletIcon size={18} weight="bold" />
                     Tambah Dompet
-                </button>
+                </Button>
             </div>
 
             {/* Grid Kartu Dompet */}

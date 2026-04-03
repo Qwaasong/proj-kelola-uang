@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import IlustrasiLoginImg from '../assets/IlustrasiLogin.png';
 import AuthHeader from '../components/AuthHeader';
+import Button from '../components/Button';
+import Input from '../components/Input';
 
 /**
  * Komponen Register untuk aplikasi Kelola Uang (Laeva)
@@ -49,57 +51,45 @@ const Register = () => {
                         Sudah Punya Akun ? <Link to="/login" className="text-primary hover:underline transition-all">Login</Link>
                     </p>
 
-                    {/* Form Input */}
-                    <form onSubmit={handleSubmit}>
-                        {/* Input Username */}
-                        <div className="mb-4">
-                            <label className="block text-[13px] mb-2 font-medium">Username</label>
-                            <input 
-                                type="text" 
-                                placeholder="Masukkan Username" 
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
-                                required
-                            />
-                            <span className="text-[11px] text-gray-400 mt-1.5 block font-medium">Disarankan Menggunakan Huruf dan Angka</span>
-                        </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <Input 
+                            label="Username"
+                            type="text" 
+                            placeholder="Masukkan Username" 
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            size="lg"
+                            required
+                        />
                         
-                        {/* Input Password */}
-                        <div className="mb-4">
-                            <label className="block text-[13px] mb-2 font-medium">Password</label>
-                            <input 
-                                type="password" 
-                                placeholder="Masukkan Password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
-                                required
-                            />
-                            <span className="text-[11px] text-gray-400 mt-1.5 block font-medium">Disarankan Menggunakan Huruf dan Angka</span>
-                        </div>
+                        <Input 
+                            label="Password"
+                            type="password" 
+                            placeholder="Masukkan Password" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            size="lg"
+                            required
+                        />
 
-                        {/* Input Konfirmasi Password */}
-                        <div className="mb-6">
-                            <label className="block text-[13px] mb-2 font-medium">Konfirmasi Password</label>
-                            <input 
-                                type="password" 
-                                placeholder="Masukkan Password" 
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full bg-inputbg rounded-md px-4 py-3 text-[14px] placeholder-gray-400 outline-none focus:ring-1 focus:ring-primary transition-all"
-                                required
-                            />
-                            <span className="text-[11px] text-gray-400 mt-1.5 block font-medium">Disarankan Menggunakan Huruf dan Angka</span>
-                        </div>
+                        <Input 
+                            label="Konfirmasi Password"
+                            type="password" 
+                            placeholder="Konfirmasi Password" 
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            size="lg"
+                            required
+                        />
 
-                        {/* Tombol Register */}
-                        <button 
+                        <Button 
                             type="submit" 
-                            className="w-full bg-primary text-white rounded-md py-3 text-[15px] font-medium hover:bg-opacity-90 transition-all mt-2"
+                            size="lg"
+                            isFullWidth
+                            className="mt-4"
                         >
                             Register
-                        </button>
+                        </Button>
                     </form>
 
                     {/* Teks Footer */}
