@@ -1,42 +1,54 @@
 <?php
 require_once __DIR__ . '/../app/core/Response.php';
 require_once __DIR__ . '/../app/config/database.php';
-require_once __DIR__ . '/../app/controllers/AuthController.php'; 
-require_once __DIR__ . '/../app/controllers/TransactionController.php'; 
-require_once __DIR__ . '/../app/controllers/RecurringController.php'; 
-require_once __DIR__ . '/../app/controllers/TargetController.php'; 
-require_once __DIR__ . '/../app/controllers/ReportController.php'; // <-- BARU
+require_once __DIR__ . '/../app/controllers/OtentikasiController.php'; 
+require_once __DIR__ . '/../app/controllers/DashboardController.php';
+require_once __DIR__ . '/../app/controllers/DompetController.php'; 
+require_once __DIR__ . '/../app/controllers/TransaksiController.php'; 
+require_once __DIR__ . '/../app/controllers/HalamanController.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
-
 $base_path = '/proj-kelola-uang/public'; 
-if (strpos($uri, $base_path) === 0) {
-    $uri = substr($uri, strlen($base_path));
-}
+if (strpos($uri, $base_path) === 0) $uri = substr($uri, strlen($base_path));
 
-$authController = new AuthController();
-$transactionController = new TransactionController(); 
-$recurringController = new RecurringController(); 
-$targetController = new TargetController(); 
-$reportController = new ReportController(); // <-- BARU
+// Inisialisasi Controller Baru
+$otentikasi = new OtentikasiController();
+$dashboard  = new DashboardController();
+$dompet     = new DompetController(); 
+$transaksi  = new TransaksiController(); 
+$halaman    = new HalamanController();
 
-if ($uri === '/api/ping' && $method === 'GET') { Response::json(200, "success", "Server berjalan!"); }
+// === OTENTIKASI ===
+if ($uri === '/api/otentikasi/masuk' && $method === 'POST') { $otentikasi->masuk(); exit(); }
+if ($uri === '/api/otentikasi/daftar' && $method === 'POST') { $otentikasi->daftar(); exit(); }
 
-if ($uri === '/api/register' && $method === 'POST') { $authController->register(); }
-if ($uri === '/api/login' && $method === 'POST') { $authController->login(); }
+// === DASHBOARD ===
+if ($uri === '/api/dashboard' && $method === 'GET') { $dashboard->getDashboard(); exit(); }
 
-if ($uri === '/api/transaksi/awal' && $method === 'POST') { $transactionController->addAwal(); }
-if ($uri === '/api/transaksi/baru' && $method === 'POST') { $transactionController->addBaru(); }
-if ($uri === '/api/transaksi/tabungan' && $method === 'POST') { $transactionController->addTabungan(); } 
+// === DOMPET ===
+if ($uri === '/api/dompet' && $method === 'GET') { $dompet->getDompet(); exit(); }
+if ($uri === '/api/dompet' && $method === 'POST') { $dompet->addDompet(); exit(); }
+if ($uri === '/api/dompet/transfer' && $method === 'PUT') { $dompet->transferDompet(); exit(); }
 
-if ($uri === '/api/recurring/pemasukan' && $method === 'POST') { $recurringController->addPemasukan(); }
-if ($uri === '/api/recurring/pengeluaran' && $method === 'POST') { $recurringController->addPengeluaran(); }
+// === TRANSAKSI & KATEGORI ===
+if ($uri === '/api/kategori' && $method === 'GET') { $transaksi->getKategori(); exit(); }
+if ($uri === '/api/transaksi' && $method === 'GET') { $transaksi->getSemua(); exit(); }
+if ($uri === '/api/transaksi' && $method === 'POST') { $transaksi->tambah(); exit(); }
+if ($uri === '/api/transaksi' && $method === 'PUT') { $transaksi->perbarui(); exit(); }
 
-if ($uri === '/api/target' && $method === 'POST') { $targetController->addTarget(); }
+// === DANA DARURAT ===
+if ($uri === '/api/dana-darurat' && $method === 'GET') { $halaman->getDanaDarurat(); exit(); }
+if ($uri === '/api/dana-darurat' && $method === 'POST') { $halaman->setTargetDana(); exit(); }
+if ($uri === '/api/dana-darurat/tambah' && $method === 'PUT') { $halaman->tambahSaldoDana(); exit(); }
 
-// --- BARU: ENDPOINT LAPORAN ---
-if ($uri === '/api/laporan/riwayat' && $method === 'POST') { $reportController->history(); exit(); }
-if ($uri === '/api/laporan/ringkasan' && $method === 'POST') { $reportController->summary(); exit(); }
+// === TARGET FINANSIAL (GOALS) ===
+if ($uri === '/api/target' && $method === 'GET') { $halaman->getTarget(); exit(); }
+if ($uri === '/api/target' && $method === 'POST') { $halaman->tambahTarget(); exit(); }
+if ($uri === '/api/target/tambah' && $method === 'PUT') { $halaman->tambahSaldoTarget(); exit(); }
 
-Response::json(404, "error", "Endpoint tidak ditemukan. Path yang dibaca server: " . $uri);
+// === LAPORAN ===
+if ($uri === '/api/laporan' && $method === 'GET') { $halaman->getLaporan(); exit(); }
+
+// Jika endpoint tidak ada
+Response::json(404, "error", "Endpoint tidak ditemukan!");
