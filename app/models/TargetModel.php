@@ -41,4 +41,9 @@ class TargetModel {
             return $e->getMessage();
         }
     }
+
+    public function delete($id, $user_id) {
+        $stmt = $this->conn->prepare("DELETE FROM target_finansial WHERE id = :id AND user_id = :user_id");
+        return $stmt->execute([':id' => $id, ':user_id' => $user_id]);
+    }
 }

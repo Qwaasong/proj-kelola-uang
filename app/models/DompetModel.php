@@ -61,4 +61,12 @@ class DompetModel {
             return false;
         }
     }
+
+    public function delete($id, $user_id) {
+        $query = "DELETE FROM dompet WHERE id = :id AND user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':user_id', $user_id);
+        return $stmt->execute();
+    }
 }

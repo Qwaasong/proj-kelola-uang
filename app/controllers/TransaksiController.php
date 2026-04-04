@@ -93,4 +93,19 @@ class TransaksiController {
             Response::json(400, "error", "Data tidak lengkap untuk pembaruan!");
         }
     }
+
+    public function hapus() {
+        $user = $this->otentikasi();
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+        if ($id) {
+            if ($this->transaksiModel->deleteTransaksi($id, $user['id'])) {
+                Response::json(200, "success", "Transaksi berhasil dihapus!");
+            } else {
+                Response::json(500, "error", "Gagal menghapus transaksi.");
+            }
+        } else {
+            Response::json(400, "error", "ID transaksi wajib!");
+        }
+    }
 }

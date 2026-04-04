@@ -30,12 +30,14 @@ if ($uri === '/api/dashboard' && $method === 'GET') { $dashboard->getDashboard()
 if ($uri === '/api/dompet' && $method === 'GET') { $dompet->getDompet(); exit(); }
 if ($uri === '/api/dompet' && $method === 'POST') { $dompet->addDompet(); exit(); }
 if ($uri === '/api/dompet/transfer' && $method === 'PUT') { $dompet->transferDompet(); exit(); }
+if ($uri === '/api/dompet' && $method === 'DELETE') { $dompet->hapus(); exit(); }
 
 // === TRANSAKSI & KATEGORI ===
 if ($uri === '/api/kategori' && $method === 'GET') { $transaksi->getKategori(); exit(); }
 if ($uri === '/api/transaksi' && $method === 'GET') { $transaksi->getSemua(); exit(); }
 if ($uri === '/api/transaksi' && $method === 'POST') { $transaksi->tambah(); exit(); }
 if ($uri === '/api/transaksi' && $method === 'PUT') { $transaksi->perbarui(); exit(); }
+if ($uri === '/api/transaksi' && $method === 'DELETE') { $transaksi->hapus(); exit(); }
 
 // === DANA DARURAT ===
 if ($uri === '/api/dana-darurat' && $method === 'GET') { $halaman->getDanaDarurat(); exit(); }
@@ -46,6 +48,7 @@ if ($uri === '/api/dana-darurat/tambah' && $method === 'PUT') { $halaman->tambah
 if ($uri === '/api/target' && $method === 'GET') { $halaman->getTarget(); exit(); }
 if ($uri === '/api/target' && $method === 'POST') { $halaman->tambahTarget(); exit(); }
 if ($uri === '/api/target/tambah' && $method === 'PUT') { $halaman->tambahSaldoTarget(); exit(); }
+if ($uri === '/api/target' && $method === 'DELETE') { $halaman->hapusTarget(); exit(); }
 
 // === LAPORAN ===
 if ($uri === '/api/laporan' && $method === 'GET') { $halaman->getLaporan(); exit(); }

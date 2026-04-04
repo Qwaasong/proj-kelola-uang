@@ -64,4 +64,19 @@ class HalamanController {
         $tahun = $_GET['tahun'] ?? date('Y');
         Response::json(200, "success", (new LaporanModel())->getReport($user['id'], $bulan, $tahun));
     }
+
+    public function hapusTarget() {
+        $user = $this->otentikasi();
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+        if ($id) {
+            if ((new TargetModel())->delete($id, $user['id'])) {
+                Response::json(200, "success", "Target berhasil dihapus!");
+            } else {
+                Response::json(500, "error", "Gagal menghapus target.");
+            }
+        } else {
+            Response::json(400, "error", "ID target wajib!");
+        }
+    }
 }

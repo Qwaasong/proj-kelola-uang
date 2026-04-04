@@ -58,4 +58,19 @@ class DompetController {
             Response::json(400, "error", "Data tidak lengkap! Butuh: dari_dompet_id, ke_dompet_id, jumlah.");
         }
     }
+
+    public function hapus() {
+        $user = $this->authenticate();
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+        if($id) {
+            if($this->dompetModel->delete($id, $user['id'])) {
+                Response::json(200, "success", "Dompet berhasil dihapus!");
+            } else {
+                Response::json(500, "error", "Gagal menghapus dompet.");
+            }
+        } else {
+            Response::json(400, "error", "ID dompet wajib!");
+        }
+    }
 }

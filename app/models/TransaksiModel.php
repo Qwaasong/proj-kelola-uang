@@ -116,4 +116,38 @@ class TransaksiModel {
             return false;
         }
     }
+
+    public function deleteTransaksi($id, $user_id) {
+        try {
+            $this->conn->beginTransaction();
+
+            // 1. Ambil data transaksi lama untuk tahu apa yang harus dibalikkan
+            $qOld = "SELECT dompet_id, jenis, jumlah FROM transaksi WHERE id = :id AND user_id = :user_id FOR UPDATE";
+            $stmtOld = $this->conn->prepare($qOld);
+            $stmtOld->execute([':id' => $id, ':user_id' => $user_id]);
+            $oldTx = $stmtOld->fetch(PDO::FETCH_ASSOC);
+
+            if (!$oldTx) { $this->conn->rollBack(); return false; }
+
+            // 2. Balikkan saldo dompet
+            if ($oldTx['dompet_id']) {
+                $revQuery = ($oldTx['jenis'] === 'Pemasukan') ? 
+                    "UPDATE dompet SET saldo = saldo - :jumlah WHERE id = :dompet_id AND user_id = :user_id" : 
+                    "UPDATE dompet SET saldo = saldo + :jumlah WHERE id = :dompet_id AND user_id = :user_id";
+                $stmtRev = $this->conn->prepare($revQuery);
+                $stmtRev->execute([':jumlah' => $oldTx['jumlah'], ':dompet_id' => $oldTx['dompet_id'], ':user_id' => $user_id]);
+            }
+
+            // 3. Hapus Transaksi
+            $qDel = "DELETE FROM transaksi WHERE id = :id AND user_id = :user_id";
+            $stmtDel = $this->conn->prepare($qDel);
+            $stmtDel->execute([':id' => $id, ':user_id' => $user_id]);
+
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return false;
+        }
+    }
 }
