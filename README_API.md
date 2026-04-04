@@ -9,6 +9,7 @@ INFORMASI UMUM
 ==================================================
 1. AUTENTIKASI
 ==================================================
+
 A. Register
    - Endpoint : /register
    - Wajib    : username, password, confirm_password
