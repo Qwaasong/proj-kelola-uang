@@ -7,7 +7,7 @@ INFORMASI UMUM
 - Format   : raw JSON
 
 ==================================================
-1. AUTENTIKASI
+1. AUTENTIFIKASI
 ==================================================
 
 A. Register
