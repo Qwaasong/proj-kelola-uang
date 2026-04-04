@@ -63,21 +63,25 @@ const Login = () => {
                     <form className="space-y-5" onSubmit={handleSubmit}>
                         <Input 
                             label="Username"
+                            name="username"
                             type="text" 
                             placeholder="Masukkan Username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             size="lg"
+                            autoComplete="username"
                             required
                         />
                         
                         <Input 
                             label="Password"
+                            name="password"
                             type="password" 
                             placeholder="Masukkan Password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             size="lg"
+                            autoComplete="current-password"
                             required
                         />
 

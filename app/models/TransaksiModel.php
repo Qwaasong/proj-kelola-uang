@@ -16,7 +16,7 @@ class TransaksiModel {
                   WHERE t.user_id = :user_id";
 
         if (!empty($search)) {
-            $query .= " AND t.nama_transaksi LIKE :search";
+            $query .= " AND t.keterangan LIKE :search";
         }
         $query .= " ORDER BY t.tanggal DESC, t.created_at DESC LIMIT :limit OFFSET :offset";
 
@@ -32,7 +32,7 @@ class TransaksiModel {
 
     public function countTotal($user_id, $search) {
         $query = "SELECT COUNT(id) as total FROM transaksi WHERE user_id = :user_id";
-        if (!empty($search)) $query .= " AND nama_transaksi LIKE :search";
+        if (!empty($search)) $query .= " AND keterangan LIKE :search";
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         if (!empty($search)) $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
@@ -42,18 +42,18 @@ class TransaksiModel {
     }
 
     // UPDATE: Menambahkan is_berulang dan frekuensi langsung ke tabel ini
-    public function createTransaksi($user_id, $dompet_id, $kategori_id, $nama_transaksi, $jenis, $tipe, $jumlah, $tanggal, $keterangan, $is_berulang, $frekuensi) {
+    public function createTransaksi($user_id, $dompet_id, $kategori_id, $jenis, $tipe, $jumlah, $tanggal, $keterangan, $is_berulang, $selected_days, $limit_date) {
         try {
             $this->conn->beginTransaction();
 
-            $query = "INSERT INTO transaksi (user_id, dompet_id, kategori_id, nama_transaksi, jenis, tipe, jumlah, tanggal, keterangan, is_berulang, frekuensi) 
-                      VALUES (:user_id, :dompet_id, :kategori_id, :nama_transaksi, :jenis, :tipe, :jumlah, :tanggal, :keterangan, :is_berulang, :frekuensi)";
+            $query = "INSERT INTO transaksi (user_id, dompet_id, kategori_id, jenis, tipe, jumlah, tanggal, keterangan, is_berulang, selected_days, limit_date) 
+                      VALUES (:user_id, :dompet_id, :kategori_id, :jenis, :tipe, :jumlah, :tanggal, :keterangan, :is_berulang, :selected_days, :limit_date)";
             $stmt = $this->conn->prepare($query);
             $stmt->execute([
                 ':user_id' => $user_id, ':dompet_id' => $dompet_id, ':kategori_id' => $kategori_id, 
-                ':nama_transaksi' => $nama_transaksi, ':jenis' => $jenis, ':tipe' => $tipe, 
+                ':jenis' => $jenis, ':tipe' => $tipe, 
                 ':jumlah' => $jumlah, ':tanggal' => $tanggal, ':keterangan' => $keterangan,
-                ':is_berulang' => $is_berulang ? 1 : 0, ':frekuensi' => $frekuensi
+                ':is_berulang' => $is_berulang ? 1 : 0, ':selected_days' => $selected_days, ':limit_date' => $limit_date
             ]);
 
             if ($dompet_id) {
@@ -72,7 +72,7 @@ class TransaksiModel {
         }
     }
 
-    public function updateTransaksi($id, $user_id, $dompet_id, $kategori_id, $nama_transaksi, $jenis, $jumlah, $tanggal, $keterangan, $is_berulang, $frekuensi) {
+    public function updateTransaksi($id, $user_id, $dompet_id, $kategori_id, $jenis, $jumlah, $tanggal, $keterangan, $is_berulang, $selected_days, $limit_date) {
         try {
             $this->conn->beginTransaction();
 
@@ -99,14 +99,16 @@ class TransaksiModel {
                 $stmtApp->execute([':jumlah' => $jumlah, ':dompet_id' => $dompet_id, ':user_id' => $user_id]);
             }
 
-            $qUpdate = "UPDATE transaksi SET dompet_id = :dompet_id, kategori_id = :kategori_id, nama_transaksi = :nama_transaksi, 
-                        jenis = :jenis, jumlah = :jumlah, tanggal = :tanggal, keterangan = :keterangan, is_berulang = :is_berulang, frekuensi = :frekuensi 
+            $qUpdate = "UPDATE transaksi SET dompet_id = :dompet_id, kategori_id = :kategori_id, 
+                        jenis = :jenis, jumlah = :jumlah, tanggal = :tanggal, keterangan = :keterangan, 
+                        is_berulang = :is_berulang, selected_days = :selected_days, limit_date = :limit_date 
                         WHERE id = :id AND user_id = :user_id";
             $stmtUpd = $this->conn->prepare($qUpdate);
             $stmtUpd->execute([
-                ':dompet_id' => $dompet_id, ':kategori_id' => $kategori_id, ':nama_transaksi' => $nama_transaksi,
+                ':dompet_id' => $dompet_id, ':kategori_id' => $kategori_id,
                 ':jenis' => $jenis, ':jumlah' => $jumlah, ':tanggal' => $tanggal, ':keterangan' => $keterangan,
-                ':is_berulang' => $is_berulang ? 1 : 0, ':frekuensi' => $frekuensi, ':id' => $id, ':user_id' => $user_id
+                ':is_berulang' => $is_berulang ? 1 : 0, ':selected_days' => $selected_days, ':limit_date' => $limit_date, 
+                ':id' => $id, ':user_id' => $user_id
             ]);
 
             $this->conn->commit();

@@ -66,31 +66,37 @@ const Register = () => {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <Input 
                             label="Username"
+                            name="username"
                             type="text" 
                             placeholder="Masukkan Username" 
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             size="lg"
+                            autoComplete="username"
                             required
                         />
                         
                         <Input 
                             label="Password"
+                            name="password"
                             type="password" 
                             placeholder="Masukkan Password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             size="lg"
+                            autoComplete="new-password"
                             required
                         />
 
                         <Input 
                             label="Konfirmasi Password"
+                            name="confirm_password"
                             type="password" 
                             placeholder="Konfirmasi Password" 
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             size="lg"
+                            autoComplete="new-password"
                             required
                         />
 

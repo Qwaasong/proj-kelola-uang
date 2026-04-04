@@ -1,10 +1,10 @@
 import SummaryCard from '../components/SummaryCard';
 import Table from '../components/Table';
 import Button from '../components/Button';
-import { 
-    Flag as FlagIcon, 
-    Calendar as CalendarIcon, 
-    TrendUp as TrendUpIcon, 
+import {
+    Flag as FlagIcon,
+    Calendar as CalendarIcon,
+    TrendUp as TrendUpIcon,
     Wallet as WalletIcon,
     Trash as TrashIcon
 } from '@phosphor-icons/react';
@@ -37,7 +37,7 @@ const Goal = () => {
     const [goalName, setGoalName] = useState('');
     const [targetAmount, setTargetAmount] = useState('');
     const [deadline, setDeadline] = useState('');
-    
+
     const [walletId, setWalletId] = useState(null);
     const [saveAmount, setSaveAmount] = useState('');
 
@@ -55,9 +55,9 @@ const Goal = () => {
     }, [fetchGoals, navigate]);
 
     const goals = goalData?.data || [];
-    const wallets = useMemo(() => 
-        (walletData?.data || []).map(w => ({ id: w.id, name: w.nama_dompet, icon: WalletIcon })), 
-    [walletData]);
+    const wallets = useMemo(() =>
+        (walletData?.data || []).map(w => ({ id: w.id, name: w.nama_dompet, icon: WalletIcon })),
+        [walletData]);
 
     const formatIDR = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
 
@@ -107,14 +107,15 @@ const Goal = () => {
     };
 
     const columns = [
-        { label: 'Nama Goal', key: 'nama_target', className: 'font-bold' },
-        { label: 'Target', key: 'jumlah_target', render: (val) => `Rp ${formatIDR(val)}` },
-        { label: 'Terkumpul', key: 'terkumpul', render: (val) => `Rp ${formatIDR(val)}` },
-        { 
-            label: 'Progres', 
-            key: 'terkumpul', 
+        { label: 'Nama Goal', key: 'col_nama_target', className: 'font-bold', render: (val, row) => row.nama_target },
+        { label: 'Target', key: 'col_jumlah_target', render: (val, row) => `Rp ${formatIDR(row.jumlah_target)}` },
+        { label: 'Terkumpul', key: 'col_terkumpul', render: (val, row) => `Rp ${formatIDR(row.terkumpul)}` },
+        {
+            label: 'Progres',
+            key: 'col_progres',
             render: (val, row) => {
-                const percent = Math.min(100, Math.round((val / row.jumlah_target) * 100));
+                if (!row) return null;
+                const percent = Math.min(100, Math.round((row.terkumpul / row.jumlah_target) * 100));
                 return <span className="text-primary font-bold">{percent}%</span>
             },
             align: 'right'
@@ -150,18 +151,18 @@ const Goal = () => {
                         <h2 className="text-[15px] font-semibold text-secondary">Daftar Goal Saya</h2>
                     </div>
 
-                    <Table 
+                    <Table
                         columns={columns}
                         data={goals}
                         actions={[
-                            { 
-                                label: 'Tabung', 
-                                icon: <TrendUpIcon size={16} weight="bold" />, 
+                            {
+                                label: 'Tabung',
+                                icon: <TrendUpIcon size={16} weight="bold" />,
                                 onClick: (row) => { setSelectedGoal(row); setIsSaveModalOpen(true); }
                             },
-                            { 
-                                label: 'Delete', 
-                                icon: <TrashIcon size={16} weight="bold" />, 
+                            {
+                                label: 'Delete',
+                                icon: <TrashIcon size={16} weight="bold" />,
                                 onClick: (row) => handleDeleteGoal(row.id),
                                 variant: 'danger'
                             },

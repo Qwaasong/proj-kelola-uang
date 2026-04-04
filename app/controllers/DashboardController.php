@@ -29,7 +29,15 @@ class DashboardController {
         $dana_darurat = $this->dashboardModel->getDanaDarurat($user['id']);
         $transaksi_hari_ini = $this->dashboardModel->getTransaksiHariIni($user['id']);
         $transaksi_detail = $this->dashboardModel->getTransaksiDetailHariIni($user['id']);
-        $status_hari_ini = $transaksi_hari_ini['Pengeluaran'] > 0 ? "Pengeluaran hari ini Rp " . number_format($transaksi_hari_ini['Pengeluaran'], 0, ',', '.') : "Belum ada pengeluaran hari ini.";
+        
+        $net_hari_ini = $transaksi_hari_ini['Pemasukan'] - $transaksi_hari_ini['Pengeluaran'];
+        if ($net_hari_ini > 0) {
+            $status_hari_ini = "Surplus hari ini Rp " . number_format($net_hari_ini, 0, ',', '.');
+        } elseif ($net_hari_ini < 0) {
+            $status_hari_ini = "Defisit hari ini Rp " . number_format(abs($net_hari_ini), 0, ',', '.');
+        } else {
+            $status_hari_ini = "Belum ada aktivitas hari ini.";
+        }
         
         $chart_kategori = $this->dashboardModel->getChartKategori($user['id'], $bulan, $tahun);
         $grafik_waktu = $this->dashboardModel->getGrafikWaktu($user['id'], $bulan, $tahun);

@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
 import api from '../utils/api';
 
+// Global cache singleton (not exported)
+const globalApiCache = {};
+
 /**
  * Custom hook to interact with the API utility.
  * @returns {Array} - [execute, { data, loading, error }]
@@ -18,8 +21,15 @@ const useApi = () => {
      * @param {object} options - Additional fetch options
      */
     const execute = useCallback(async (method, endpoint, body = null, options = {}) => {
+        const isGet = method.toUpperCase() === 'GET';
+        
         setLoading(true);
         setError(null);
+
+        // Instant Cache Hit (Stale-While-Revalidate)
+        if (isGet && globalApiCache[endpoint]) {
+            setData(globalApiCache[endpoint]);
+        }
         
         try {
             let response;
@@ -27,6 +37,8 @@ const useApi = () => {
             switch (method.toUpperCase()) {
                 case 'GET':
                     response = await apiBase.get(endpoint, options);
+                    // Update Cache
+                    globalApiCache[endpoint] = response;
                     break;
                 case 'POST':
                     response = await apiBase.post(endpoint, body, options);

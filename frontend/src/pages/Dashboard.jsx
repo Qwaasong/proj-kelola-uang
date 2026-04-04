@@ -52,7 +52,7 @@ const Dashboard = () => {
         loadDashboard();
     }, [fetchDashboard, navigate]);
 
-    if (isFirstLoad || loading) {
+    if (isFirstLoad || (loading && !data)) {
         return <DashboardSkeleton />;
     }
 
@@ -73,8 +73,8 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex items-center gap-3 w-full lg:w-auto">
+                    <Button size="md" variant="secondary" onClick={() => navigate('/laporan')}>Lihat Laporan</Button>
                     <Button size="md" onClick={() => navigate('/transaksi')}>Tambah Transaksi</Button>
-                    <Button size="md" variant="secondary" onClick={() => navigate('/dompet')}>Transfer Dana</Button>
                 </div>
             </div>
 

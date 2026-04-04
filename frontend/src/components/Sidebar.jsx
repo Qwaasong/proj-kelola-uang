@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     HouseIcon,      
     WalletIcon,     
@@ -35,6 +35,14 @@ const footerMenus = [
  */
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        if (confirm('Apakah Anda yakin ingin keluar?')) {
+            localStorage.removeItem('auth_token');
+            navigate('/login');
+        }
+    };
 
     return (
         <div
@@ -151,10 +159,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <div className="pb-8 space-y-2 flex flex-col items-center w-full px-4">
                 {footerMenus.map((menu) => {
                     const IconComponent = menu.icon;
+                    const isLogout = menu.id === 7;
+                    
                     return (
-                        <Link
+                        <div
                             key={menu.id}
-                            to={menu.path}
+                            onClick={() => isLogout ? handleLogout() : navigate(menu.path)}
                             className={`group relative flex items-center h-12 w-full rounded-xl cursor-pointer transition-colors duration-200 hover:bg-gray-50 ${menu.colorClass}`}
                         >
                             <div className="w-[56px] h-full flex items-center justify-center flex-shrink-0">
@@ -173,7 +183,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                     <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rotate-45"></div>
                                 </div>
                             )}
-                        </Link>
+                        </div>
                     );
                 })}
             </div>

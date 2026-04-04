@@ -2,12 +2,14 @@ import { useEffect, useRef } from 'react';
 import { InfoIcon } from '@phosphor-icons/react';
 import Chart from 'chart.js/auto';
 import Button from './Button';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Komponen BarChart — Distribusi Dana berdasarkan kategori.
  * Menggunakan Chart.js dengan lifecycle cleanup untuk mencegah memory leak.
  */
 const BarChart = ({ data = [] }) => {
+    const navigate = useNavigate();
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
 
@@ -61,7 +63,7 @@ const BarChart = ({ data = [] }) => {
                     <h2 className="text-[16px] font-semibold">Distribusi Dana</h2>
                     <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
-                <Button size="sm" variant="secondary">Lihat Laporan</Button>
+                <Button size="sm" variant="secondary" onClick={() => navigate('/laporan')}>Lihat Laporan</Button>
             </div>
             <div className="flex-grow w-full h-[250px] relative">
                 <canvas ref={chartRef}></canvas>

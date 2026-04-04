@@ -87,19 +87,19 @@ class DashboardModel {
     }
 
     public function getGrafikWaktu($user_id, $bulan, $tahun) {
-        // Ambil data harian untuk line chart
-        $query = "SELECT DAY(tanggal) as hari, 
+        // Ambil data per jam untuk aktivitas HARI INI saja
+        $query = "SELECT HOUR(created_at) as jam, 
                          SUM(CASE WHEN jenis = 'Pemasukan' THEN jumlah ELSE 0 END) as masuk,
                          SUM(CASE WHEN jenis = 'Pengeluaran' THEN jumlah ELSE 0 END) as keluar
                   FROM transaksi 
-                  WHERE user_id = :user_id AND MONTH(tanggal) = :bulan AND YEAR(tanggal) = :tahun 
-                  GROUP BY DAY(tanggal) ORDER BY hari ASC";
+                  WHERE user_id = :user_id AND tanggal = CURRENT_DATE() 
+                  GROUP BY HOUR(created_at) ORDER BY jam ASC";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([':user_id' => $user_id, ':bulan' => $bulan, ':tahun' => $tahun]);
+        $stmt->execute([':user_id' => $user_id]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         foreach ($result as &$row) {
-            $row['hari'] = (int)$row['hari'];
+            $row['jam'] = (int)$row['jam'];
             $row['masuk'] = (float)$row['masuk'];
             $row['keluar'] = (float)$row['keluar'];
         }
@@ -107,7 +107,7 @@ class DashboardModel {
     }
 
     public function getLogTransaksi($user_id, $limit = 3) {
-        $query = "SELECT t.id, t.nama_transaksi, t.jenis, t.jumlah, t.tanggal, d.nama_dompet, k.nama_kategori 
+        $query = "SELECT t.id, t.jenis, t.jumlah, t.tanggal, d.nama_dompet, k.nama_kategori 
                   FROM transaksi t 
                   LEFT JOIN dompet d ON t.dompet_id = d.id 
                   LEFT JOIN kategori k ON t.kategori_id = k.id 

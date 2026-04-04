@@ -50,18 +50,19 @@ class TransaksiController {
         $user = $this->otentikasi();
         $data = json_decode(file_get_contents("php://input"));
 
-        if (isset($data->nama_transaksi, $data->jenis, $data->jumlah, $data->tanggal)) {
+        if (isset($data->jenis, $data->jumlah, $data->tanggal)) {
             $dompet_id = !empty($data->dompet_id) ? $data->dompet_id : null;
             $kategori_id = !empty($data->kategori_id) ? $data->kategori_id : null;
             $keterangan = !empty($data->keterangan) ? $data->keterangan : null;
             
             $is_berulang = isset($data->is_berulang) ? $data->is_berulang : false;
-            $frekuensi = !empty($data->frekuensi) ? $data->frekuensi : null;
+            $selected_days = !empty($data->selected_days) ? $data->selected_days : null;
+            $limit_date = !empty($data->limit_date) ? $data->limit_date : null;
             $tipe = $is_berulang ? 'RUTIN' : 'BARU';
 
             $sukses = $this->transaksiModel->createTransaksi(
-                $user['id'], $dompet_id, $kategori_id, $data->nama_transaksi, 
-                $data->jenis, $tipe, $data->jumlah, $data->tanggal, $keterangan, $is_berulang, $frekuensi
+                $user['id'], $dompet_id, $kategori_id, 
+                $data->jenis, $tipe, $data->jumlah, $data->tanggal, $keterangan, $is_berulang, $selected_days, $limit_date
             );
 
             if ($sukses) Response::json(201, "success", "Transaksi berhasil ditambahkan!");
@@ -75,16 +76,17 @@ class TransaksiController {
         $user = $this->otentikasi();
         $data = json_decode(file_get_contents("php://input"));
 
-        if (isset($data->id, $data->nama_transaksi, $data->jenis, $data->jumlah, $data->tanggal)) {
+        if (isset($data->id, $data->jenis, $data->jumlah, $data->tanggal)) {
             $dompet_id = !empty($data->dompet_id) ? $data->dompet_id : null;
             $kategori_id = !empty($data->kategori_id) ? $data->kategori_id : null;
             $keterangan = !empty($data->keterangan) ? $data->keterangan : null;
             $is_berulang = isset($data->is_berulang) ? $data->is_berulang : false;
-            $frekuensi = !empty($data->frekuensi) ? $data->frekuensi : null;
+            $selected_days = !empty($data->selected_days) ? $data->selected_days : null;
+            $limit_date = !empty($data->limit_date) ? $data->limit_date : null;
 
             $sukses = $this->transaksiModel->updateTransaksi(
                 $data->id, $user['id'], $dompet_id, $kategori_id, 
-                $data->nama_transaksi, $data->jenis, $data->jumlah, $data->tanggal, $keterangan, $is_berulang, $frekuensi
+                $data->jenis, $data->jumlah, $data->tanggal, $keterangan, $is_berulang, $selected_days, $limit_date
             );
 
             if ($sukses) Response::json(200, "success", "Transaksi berhasil diubah!");

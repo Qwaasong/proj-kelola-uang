@@ -7,6 +7,7 @@ import {
     ArrowDownRightIcon
 } from '@phosphor-icons/react';
 import Chart from 'chart.js/auto';
+import { useNavigate } from 'react-router-dom';
 
 // Data transaksi hari ini - fallback jika belum ada data
 const mockTransactions = [
@@ -22,10 +23,15 @@ const mockTransactions = [
  * @param {Object} todayData - Data dari transaksi_hari_ini
  */
 const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0, status: "" } }) => {
+    const navigate = useNavigate();
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
 
-    const labels = trendData.length > 0 ? trendData.map(d => `Tgl ${d.hari}`) : ['12 AM', '8 AM', '4 PM', '8 PM'];
+    // Format labels: Jika jam 8 -> "08:00"
+    const labels = trendData.length > 0 
+        ? trendData.map(d => `${d.jam < 10 ? '0' : ''}${d.jam}:00`) 
+        : ['08:00', '12:00', '16:00', '20:00'];
+    
     const dataMasuk = trendData.length > 0 ? trendData.map(d => d.masuk) : [0, 0, 0, 0];
     const dataKeluar = trendData.length > 0 ? trendData.map(d => d.keluar) : [0, 0, 0, 0];
 
@@ -101,13 +107,14 @@ const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0,
                     <h2 className="text-[16px] font-semibold">Transaksi Hari Ini</h2>
                     <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
                 </div>
-                <Button size="sm" variant="secondary">Detail</Button>
+                <Button size="sm" variant="secondary" onClick={() => navigate('/transaksi')}>Detail</Button>
             </div>
 
             {/* Total Transaksi */}
             <div className="mb-5">
-                <p className="text-[28px] font-semibold flex items-baseline gap-1">
-                    <span className="text-sm text-gray-400 font-medium">Rp</span> {new Intl.NumberFormat('id-ID').format(todayData.Pemasukan - todayData.Pengeluaran)}
+                <p className="text-[28px] font-semibold flex items-baseline gap-1 text-secondary">
+                    <span className="text-sm text-gray-400 font-medium">Rp</span> 
+                    {new Intl.NumberFormat('id-ID').format(Math.abs(todayData.Pemasukan - todayData.Pengeluaran))}
                 </p>
                 <p className="text-[11px] text-gray-500 font-medium mt-1">{todayData.status || "Pencatatan hari ini"}</p>
             </div>

@@ -8,7 +8,7 @@ import {
     Gear as GearIcon,
 } from '@phosphor-icons/react';
 import useFirstLoad from '../hooks/useFirstLoad';
-import DashboardSkeleton from '../components/DashboardSkeleton';
+import DanaDaruratSkeleton from '../components/DanaDaruratSkeleton';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
 import Select from '../components/Select';
@@ -93,7 +93,7 @@ const DanaDarurat = () => {
     ];
 
     if (isFirstLoad || (loadingStatus && !statusData)) {
-        return <DashboardSkeleton />;
+        return <DanaDaruratSkeleton />;
     }
 
     const selisih = Math.max(0, status.jumlah_target - status.jumlah_terkumpul);
