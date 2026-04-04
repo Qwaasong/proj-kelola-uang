@@ -1,68 +1,42 @@
 <?php
+require_once __DIR__ . '/../app/core/Response.php';
+require_once __DIR__ . '/../app/config/database.php';
+require_once __DIR__ . '/../app/controllers/AuthController.php'; 
+require_once __DIR__ . '/../app/controllers/TransactionController.php'; 
+require_once __DIR__ . '/../app/controllers/RecurringController.php'; 
+require_once __DIR__ . '/../app/controllers/TargetController.php'; 
+require_once __DIR__ . '/../app/controllers/ReportController.php'; // <-- BARU
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+$base_path = '/proj-kelola-uang/public'; 
+if (strpos($uri, $base_path) === 0) {
+    $uri = substr($uri, strlen($base_path));
 }
 
-require_once '../app/core/Response.php';
+$authController = new AuthController();
+$transactionController = new TransactionController(); 
+$recurringController = new RecurringController(); 
+$targetController = new TargetController(); 
+$reportController = new ReportController(); // <-- BARU
 
-// Menangkap semua error ringan (Warning, Notice, Deprecated)
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    Response::error("System Error: " . $errstr . " in " . basename($errfile) . " line " . $errline, 500);
-});
+if ($uri === '/api/ping' && $method === 'GET') { Response::json(200, "success", "Server berjalan!"); }
 
-// Menangkap semua error berat (Fatal Error, Uncaught Exception)
-set_exception_handler(function($exception) {
-    Response::error("Server Error: " . $exception->getMessage(), 500);
-});
+if ($uri === '/api/register' && $method === 'POST') { $authController->register(); }
+if ($uri === '/api/login' && $method === 'POST') { $authController->login(); }
 
-$request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if ($uri === '/api/transaksi/awal' && $method === 'POST') { $transactionController->addAwal(); }
+if ($uri === '/api/transaksi/baru' && $method === 'POST') { $transactionController->addBaru(); }
+if ($uri === '/api/transaksi/tabungan' && $method === 'POST') { $transactionController->addTabungan(); } 
 
-$api_endpoint = '';
-if (preg_match('/\/api(\/.*)?$/', $request_uri, $matches)) {
-    $api_endpoint = '/api' . ($matches[1] ?? '');
-} else {
-    $api_endpoint = $request_uri;
-}
+if ($uri === '/api/recurring/pemasukan' && $method === 'POST') { $recurringController->addPemasukan(); }
+if ($uri === '/api/recurring/pengeluaran' && $method === 'POST') { $recurringController->addPengeluaran(); }
 
-$api_endpoint = rtrim($api_endpoint, '/');
+if ($uri === '/api/target' && $method === 'POST') { $targetController->addTarget(); }
 
-switch ($api_endpoint) {
-    
-    case '/api/user':
-        require_once '../app/handlers/user_handler.php';
-        break;
+// --- BARU: ENDPOINT LAPORAN ---
+if ($uri === '/api/laporan/riwayat' && $method === 'POST') { $reportController->history(); exit(); }
+if ($uri === '/api/laporan/ringkasan' && $method === 'POST') { $reportController->summary(); exit(); }
 
-    case '/api/login':
-        require_once '../app/handlers/login_handler.php';
-        break;
-
-    case '/api/transaction':
-        require_once '../app/handlers/transaction_handler.php';
-        break;
-
-    case '/api/target':
-        require_once '../app/handlers/target_handler.php';
-        break;
-
-    case '/api/recurring':
-        require_once '../app/handlers/recurring_handler.php';
-        break;
-
-    case '/api/report':
-        require_once '../app/handlers/report_handler.php';
-        break;
-
-    case '/api/ai-analyst':
-        require_once '../app/handlers/ai_handler.php';
-        break;
-
-    default:
-        Response::error("Endpoint API tidak ditemukan. Periksa kembali URL Anda.", 404);
-        break;
-}
+Response::json(404, "error", "Endpoint tidak ditemukan. Path yang dibaca server: " . $uri);
