@@ -1,36 +1,36 @@
 <?php
-
-require_once __DIR__ . '/../core/Response.php';
 require_once __DIR__ . '/../core/Env.php';
+Env::load(__DIR__ . '/../../.env'); // Pastikan path ke .env benar
 
-class Database
-{
-    private $host;
-    private $db_name;
-    private $username;
-    private $password;
-    public $conn;
+class Database {
+    private static $instance = null;
+    private $conn;
 
-    public function __construct()
-    {
-        $this->host = Env::get('DB_HOST', 'localhost');
-        $this->db_name = Env::get('DB_NAME', 'uangmu_app_db');
-        $this->username = Env::get('DB_USER', 'root');
-        $this->password = Env::get('DB_PASS', '');
+    // Private constructor agar tidak bisa di-instansiasi pakai keyword 'new' di luar kelas
+    private function __construct() {
+        $host = getenv('DB_HOST') ?: '127.0.0.1';
+        $db_name = getenv('DB_NAME');
+        $username = getenv('DB_USER');
+        $password = getenv('DB_PASS');
+
+        try {
+            $this->conn = new PDO("mysql:host=" . $host . ";dbname=" . $db_name, $username, $password);
+            // Mode error exception agar mudah di-debug
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            // Default fetch data sebagai array asosiatif
+            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            header('Content-Type: application/json');
+            echo json_encode(["status" => "error", "message" => "Connection error: " . $exception->getMessage()]);
+            exit;
+        }
     }
 
-    public function connect()
-    {
-        try {
-            $this->conn = new PDO(
-                "mysql:host={$this->host};dbname={$this->db_name}",
-                $this->username,
-                $this->password
-            );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $this->conn;
-        } catch (PDOException $e) {
-            Response::error("Koneksi database gagal", 500);
+    // Metode ini yang akan dipakai di seluruh aplikasi untuk ambil 1 koneksi yang sama
+    public static function getConnection() {
+        if (self::$instance == null) {
+            self::$instance = new Database();
         }
+        return self::$instance->conn;
     }
 }
