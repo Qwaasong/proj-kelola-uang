@@ -25,12 +25,12 @@ const Login = () => {
         e.preventDefault();
         
         try {
-            const response = await login('POST', '/login', { username, password });
+            const response = await login('POST', '/otentikasi/masuk', { username, password });
             console.log("Login sukses:", response);
             
-            // Simpan token jika ada (Contoh)
-            if (response.token) {
-                localStorage.setItem('auth_token', response.token);
+            if (response.data && response.data.token) {
+                localStorage.setItem('auth_token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
             }
 
             // Redirect ke dashboard

@@ -28,6 +28,9 @@ class DashboardController {
         $summary_bulanan = $this->dashboardModel->getSummaryBulanan($user['id'], $bulan, $tahun);
         $dana_darurat = $this->dashboardModel->getDanaDarurat($user['id']);
         $transaksi_hari_ini = $this->dashboardModel->getTransaksiHariIni($user['id']);
+        $transaksi_detail = $this->dashboardModel->getTransaksiDetailHariIni($user['id']);
+        $status_hari_ini = $transaksi_hari_ini['Pengeluaran'] > 0 ? "Pengeluaran hari ini Rp " . number_format($transaksi_hari_ini['Pengeluaran'], 0, ',', '.') : "Belum ada pengeluaran hari ini.";
+        
         $chart_kategori = $this->dashboardModel->getChartKategori($user['id'], $bulan, $tahun);
         $grafik_waktu = $this->dashboardModel->getGrafikWaktu($user['id'], $bulan, $tahun);
         $log_transaksi = $this->dashboardModel->getLogTransaksi($user['id'], 3);
@@ -42,7 +45,10 @@ class DashboardController {
             "pemasukan_bulanan" => $summary_bulanan['Pemasukan'],
             "pengeluaran_bulanan" => $summary_bulanan['Pengeluaran'],
             "dana_darurat" => $dana_darurat,
-            "transaksi_hari_ini" => $transaksi_hari_ini,
+            "transaksi_hari_ini" => array_merge($transaksi_hari_ini, [
+                "status" => $status_hari_ini,
+                "detail" => $transaksi_detail
+            ]),
             "distribusi_kategori" => $chart_kategori,
             "grafik_waktu" => $grafik_waktu,
             "log_transaksi" => $log_transaksi

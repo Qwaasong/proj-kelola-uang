@@ -13,6 +13,15 @@ const Transaksi = lazy(() => import('../pages/Transaksi'));
 const DanaDarurat = lazy(() => import('../pages/DanaDarurat'));
 const Goal = lazy(() => import('../pages/Goal'));
 const Laporan = lazy(() => import('../pages/Laporan'));
+import ProtectedRoute from '../components/ProtectedRoute';
+
+/**
+ * GuestRoute - Mencegah user yang sudah login untuk kembali ke halaman login/register
+ */
+const GuestRoute = ({ children }) => {
+  const token = localStorage.getItem('auth_token');
+  return !token ? children : <Navigate to="/dashboard" replace />;
+};
 
 /**
  * Wrapper untuk mendukung Lazy Loading dengan Suspense dan ProgressBar
@@ -30,15 +39,27 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: React.createElement(Loadable(Login)),
+    element: (
+      <GuestRoute>
+        {React.createElement(Loadable(Login))}
+      </GuestRoute>
+    ),
   },
   {
     path: '/register',
-    element: React.createElement(Loadable(Register)),
+    element: (
+      <GuestRoute>
+        {React.createElement(Loadable(Register))}
+      </GuestRoute>
+    ),
   },
   {
     // Dashboard Layout (App.jsx) menampung Sidebar yang Persistent
-    element: <App />,
+    element: (
+      <ProtectedRoute>
+        <App />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '/dashboard',

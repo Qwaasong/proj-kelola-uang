@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import IlustrasiLoginImg from '../assets/IlustrasiLogin.png';
 import AuthHeader from '../components/AuthHeader';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import useApi from '../hooks/useApi';
 
 /**
  * Komponen Register untuk aplikasi Kelola Uang (Laeva)
  * Menggunakan standar React Functional Component dengan Tailwind CSS
  */
 const Register = () => {
+    const navigate = useNavigate();
+    const [register, { loading, error }] = useApi();
+
     // State untuk menangkap input user
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -17,9 +21,9 @@ const Register = () => {
 
     /**
      * Fungsi handle submit form
-     * Di sini adalah tempat untuk melakukan API call pendaftaran nantinya
+     * Melakukan API call pendaftaran ke backend
      */
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         if (password !== confirmPassword) {
@@ -27,10 +31,18 @@ const Register = () => {
             return;
         }
 
-        // Logika API Call (Placeholder)
-        console.log("Memulai proses registrasi untuk:", { username, password });
-        
-        alert(`Register button clicked for user: ${username}`);
+        try {
+            await register('POST', '/otentikasi/daftar', { 
+                username, 
+                password, 
+                confirm_password: confirmPassword 
+            });
+            
+            alert("Registrasi berhasil! Silakan login.");
+            navigate('/login');
+        } catch (err) {
+            console.error("Registrasi gagal:", err.message);
+        }
     };
 
     return (
@@ -87,10 +99,18 @@ const Register = () => {
                             size="lg"
                             isFullWidth
                             className="mt-4"
+                            disabled={loading}
                         >
-                            Register
+                            {loading ? 'Registering...' : 'Register'}
                         </Button>
                     </form>
+
+                    {/* Menampilkan pesan error jika ada */}
+                    {error && (
+                        <p className="text-red-500 text-sm mt-4 text-center font-medium">
+                            {error.message}
+                        </p>
+                    )}
 
                     {/* Teks Footer */}
                     <p className="text-center text-[12px] mt-8 font-medium px-4">

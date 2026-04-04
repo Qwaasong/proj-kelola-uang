@@ -56,6 +56,17 @@ class DashboardModel {
         return $data;
     }
 
+    public function getTransaksiDetailHariIni($user_id) {
+        $query = "SELECT k.nama_kategori as label, SUM(t.jumlah) as amount 
+                  FROM transaksi t 
+                  JOIN kategori k ON t.kategori_id = k.id 
+                  WHERE t.user_id = :user_id AND t.tanggal = CURRENT_DATE() 
+                  GROUP BY k.nama_kategori";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([':user_id' => $user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getChartKategori($user_id, $bulan, $tahun) {
         $query = "SELECT k.nama_kategori, SUM(t.jumlah) as total 
                   FROM transaksi t JOIN kategori k ON t.kategori_id = k.id 
@@ -64,17 +75,35 @@ class DashboardModel {
                   GROUP BY k.nama_kategori ORDER BY total DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([':user_id' => $user_id, ':bulan' => $bulan, ':tahun' => $tahun]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Tambahkan persentase untuk kemudahan di frontend
+        $grand_total = array_sum(array_column($result, 'total'));
+        foreach ($result as &$row) {
+            $row['persentase'] = $grand_total > 0 ? round(($row['total'] / $grand_total) * 100, 2) : 0;
+            $row['total'] = (float)$row['total'];
+        }
+        return $result;
     }
 
     public function getGrafikWaktu($user_id, $bulan, $tahun) {
-        $query = "SELECT tanggal, jenis, SUM(jumlah) as total 
+        // Ambil data harian untuk line chart
+        $query = "SELECT DAY(tanggal) as hari, 
+                         SUM(CASE WHEN jenis = 'Pemasukan' THEN jumlah ELSE 0 END) as masuk,
+                         SUM(CASE WHEN jenis = 'Pengeluaran' THEN jumlah ELSE 0 END) as keluar
                   FROM transaksi 
                   WHERE user_id = :user_id AND MONTH(tanggal) = :bulan AND YEAR(tanggal) = :tahun 
-                  GROUP BY tanggal, jenis ORDER BY tanggal ASC";
+                  GROUP BY DAY(tanggal) ORDER BY hari ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([':user_id' => $user_id, ':bulan' => $bulan, ':tahun' => $tahun]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($result as &$row) {
+            $row['hari'] = (int)$row['hari'];
+            $row['masuk'] = (float)$row['masuk'];
+            $row['keluar'] = (float)$row['keluar'];
+        }
+        return $result;
     }
 
     public function getLogTransaksi($user_id, $limit = 3) {

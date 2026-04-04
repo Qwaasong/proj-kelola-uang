@@ -17,11 +17,14 @@ export const apiFetch = async (endpoint, options = {}) => {
         ...rest 
     } = options;
 
+    const token = localStorage.getItem('auth_token');
+
     const config = {
         method,
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...headers,
         },
         ...rest,
@@ -65,4 +68,54 @@ export const api = {
     delete: (endpoint, options) => apiFetch(endpoint, { ...options, method: 'DELETE' }),
 };
 
-export default api;
+export const authService = {
+    login: (credentials) => api.post('/otentikasi/masuk', credentials),
+    register: (data) => api.post('/otentikasi/daftar', data),
+};
+
+export const dashboardService = {
+    get: (params) => api.get('/dashboard' + (params ? `?${new URLSearchParams(params)}` : '')),
+};
+
+export const dompetService = {
+    getAll: () => api.get('/dompet'),
+    create: (data) => api.post('/dompet', data),
+    transfer: (data) => api.put('/dompet/transfer', data),
+    delete: (id) => api.delete(`/dompet?id=${id}`),
+};
+
+export const transactionService = {
+    getAll: (params) => api.get('/transaksi' + (params ? `?${new URLSearchParams(params)}` : '')),
+    create: (data) => api.post('/transaksi', data),
+    update: (data) => api.put('/transaksi', data),
+    delete: (id) => api.delete(`/transaksi?id=${id}`),
+    getCategories: () => api.get('/kategori'),
+};
+
+export const emergencyFundService = {
+    get: () => api.get('/dana-darurat'),
+    setTarget: (data) => api.post('/dana-darurat', data),
+    addSaldo: (data) => api.put('/dana-darurat/tambah', data),
+};
+
+export const targetService = {
+    getAll: () => api.get('/target'),
+    create: (data) => api.post('/target', data),
+    addSaldo: (data) => api.put('/target/tambah', data),
+    delete: (id) => api.delete(`/target?id=${id}`),
+};
+
+export const reportService = {
+    get: (params) => api.get('/laporan' + (params ? `?${new URLSearchParams(params)}` : '')),
+};
+
+export default {
+    base: api,
+    auth: authService,
+    dashboard: dashboardService,
+    dompet: dompetService,
+    transactions: transactionService,
+    emergencyFund: emergencyFundService,
+    target: targetService,
+    reports: reportService,
+};

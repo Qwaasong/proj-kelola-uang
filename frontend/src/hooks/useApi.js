@@ -23,18 +23,19 @@ const useApi = () => {
         
         try {
             let response;
+            const apiBase = api.base;
             switch (method.toUpperCase()) {
                 case 'GET':
-                    response = await api.get(endpoint, options);
+                    response = await apiBase.get(endpoint, options);
                     break;
                 case 'POST':
-                    response = await api.post(endpoint, body, options);
+                    response = await apiBase.post(endpoint, body, options);
                     break;
                 case 'PUT':
-                    response = await api.put(endpoint, body, options);
+                    response = await apiBase.put(endpoint, body, options);
                     break;
                 case 'DELETE':
-                    response = await api.delete(endpoint, options);
+                    response = await apiBase.delete(endpoint, options);
                     break;
                 default:
                     throw new Error(`Unsupported method: ${method}`);

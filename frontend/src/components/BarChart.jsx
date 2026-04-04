@@ -7,9 +7,12 @@ import Button from './Button';
  * Komponen BarChart — Distribusi Dana berdasarkan kategori.
  * Menggunakan Chart.js dengan lifecycle cleanup untuk mencegah memory leak.
  */
-const BarChart = () => {
+const BarChart = ({ data = [] }) => {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
+
+    const labels = data.length > 0 ? data.map(item => item.nama_kategori) : ['Belum ada data'];
+    const values = data.length > 0 ? data.map(item => item.total) : [0];
 
     useEffect(() => {
         if (chartInstance.current) chartInstance.current.destroy();
@@ -18,10 +21,10 @@ const BarChart = () => {
         chartInstance.current = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Makan & Minum', 'Transportasi', 'Dana Darurat', 'Goal', 'Langganan'],
+                labels: labels,
                 datasets: [{
                     label: 'Semua Dana',
-                    data: [35, 88, 93, 80, 58],
+                    data: values,
                     backgroundColor: '#639E88',
                     borderRadius: 6,
                     barThickness: 45,

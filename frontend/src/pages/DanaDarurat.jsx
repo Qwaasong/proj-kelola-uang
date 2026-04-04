@@ -6,23 +6,26 @@ import {
     Wallet as WalletIcon, 
     TrendUp as TrendUpIcon, 
     Gear as GearIcon,
-    PencilSimple as PencilSimpleIcon,
-    Trash as TrashIcon
 } from '@phosphor-icons/react';
 import useFirstLoad from '../hooks/useFirstLoad';
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
 import Select from '../components/Select';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import useApi from '../hooks/useApi';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Halaman Dana Darurat.
- * Menampilkan target, progres, dan log transaksi dana darurat.
+ * Menghubungkan data progres dan log transaksi ke API backend.
  */
 const DanaDarurat = () => {
-    // Simulasi loading state agar konsisten dengan halaman lain
-    const isLoading = useFirstLoad('danadarurat', 250);
+    const navigate = useNavigate();
+    const isFirstLoad = useFirstLoad('danadarurat', 250);
+    const [fetchStatus, { data: statusData, loading: loadingStatus }] = useApi();
+    const [fetchWallets, { data: walletData }] = useApi();
+    const [actionApi, { loading: loadingAction }] = useApi();
 
     // --- State Modals ---
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -32,39 +35,72 @@ const DanaDarurat = () => {
     const [walletId, setWalletId] = useState(null);
     const [amount, setAmount] = useState('');
     const [description, setDescription] = useState('');
-    const [targetAmount, setTargetAmount] = useState('786.000');
-    const [duration, setDuration] = useState('6');
+    const [targetAmount, setTargetAmount] = useState('');
 
-    // Data Dummy Wallets
-    const walletsData = [
-        { id: 1, name: 'Dompet Fisik', icon: WalletIcon },
-        { id: 2, name: 'Rekening BCA', icon: WalletIcon },
-    ];
+    const loadData = async () => {
+        try {
+            await fetchStatus('GET', '/dana-darurat');
+            if (!walletData) await fetchWallets('GET', '/dompet');
+        } catch (err) {
+            if (err.status === 401) navigate('/login');
+        }
+    };
 
-    // Data Dummy Log Transaksi Dana Darurat
-    const logData = [
-        { id: 1, wallet: 'BCA', amount: '120.000', date: '30 Maret 2026' },
-        { id: 2, wallet: 'BCA', amount: '120.000', date: '30 Maret 2026' },
-        { id: 3, wallet: 'BCA', amount: '120.000', date: '30 Maret 2026' },
-        { id: 4, wallet: 'BCA', amount: '120.000', date: '30 Maret 2026' },
-        { id: 5, wallet: 'BCA', amount: '120.000', date: '30 Maret 2026' },
-    ];
+    useEffect(() => {
+        loadData();
+    }, [fetchStatus, navigate]);
 
-    // Konfigurasi kolom tabel
+    const status = statusData?.data || { jumlah_target: 0, jumlah_terkumpul: 0, log: [] };
+    const wallets = useMemo(() => 
+        (walletData?.data || []).map(w => ({ id: w.id, name: w.nama_dompet, icon: WalletIcon })), 
+    [walletData]);
+
+    const handleSetTarget = async (e) => {
+        e.preventDefault();
+        try {
+            await actionApi('POST', '/dana-darurat', { jumlah_target: targetAmount });
+            setIsTargetModalOpen(false);
+            loadData();
+        } catch (err) {
+            alert("Gagal update target: " + err.message);
+        }
+    };
+
+    const handleAddFund = async (e) => {
+        e.preventDefault();
+        try {
+            await actionApi('PUT', '/dana-darurat/tambah', { 
+                dompet_id: walletId, 
+                jumlah: amount,
+                keterangan: description 
+            });
+            setIsAddModalOpen(false);
+            setAmount('');
+            setWalletId(null);
+            setDescription('');
+            loadData();
+        } catch (err) {
+            alert("Gagal menambah dana: " + err.message);
+        }
+    };
+
+    const formatIDR = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
+
     const columns = [
-        { label: 'Dompet', key: 'wallet' },
-        { label: 'Jumlah', key: 'amount', render: (val) => `Rp ${val}` },
-        { label: 'Tanggal', key: 'date', align: 'right', className: 'text-gray-500' },
+        { label: 'Dompet Sumber', key: 'nama_dompet' },
+        { label: 'Jumlah', key: 'jumlah', render: (val) => `Rp ${formatIDR(val)}` },
+        { label: 'Tanggal', key: 'tanggal', align: 'right', className: 'text-gray-500' },
     ];
 
-    if (isLoading) {
+    if (isFirstLoad || (loadingStatus && !statusData)) {
         return <DashboardSkeleton />;
     }
+
+    const selisih = Math.max(0, status.jumlah_target - status.jumlah_terkumpul);
 
     return (
         <div className="flex flex-col h-full overflow-y-auto w-full">
             
-            {/* Header Halaman */}
             <div className="flex justify-between items-center px-8 py-8 flex-shrink-0">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl font-semibold text-secondary">Dana Darurat</h1>
@@ -77,7 +113,10 @@ const DanaDarurat = () => {
                         variant="secondary" 
                         size="md" 
                         icon={<GearIcon size={18} weight="bold" />}
-                        onClick={() => setIsTargetModalOpen(true)}
+                        onClick={() => {
+                            setTargetAmount(status.jumlah_target);
+                            setIsTargetModalOpen(true);
+                        }}
                     >
                         Ubah Target
                     </Button>
@@ -91,62 +130,27 @@ const DanaDarurat = () => {
                 </div>
             </div>
 
-            {/* Konten Utama */}
             <div className="px-8 pb-10 flex flex-col gap-6 w-full">
                 
-                {/* Summary Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <SummaryCard title="Terkumpul" amount="120.000" />
-                    <SummaryCard title="Target" amount="786.000" />
-                    <SummaryCard title="Selisih" amount="567.000" />
-                    <SummaryCard title="Jangka Waktu" amount="6" showRp={false} suffix="Bulan" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <SummaryCard title="Terkumpul" amount={formatIDR(status.jumlah_terkumpul)} />
+                    <SummaryCard title="Target" amount={formatIDR(status.jumlah_target)} />
+                    <SummaryCard title="Selisih" amount={formatIDR(selisih)} />
                 </div>
 
-                {/* Tabel Log Transaksi (Filament Style Container) */}
-                <div className="bg-white rounded-xl ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] overflow-hidden">
-                    
-                    {/* Header Tabel Box */}
+                <div className="bg-white rounded-xl ring-1 ring-gray-950/5 shadow-sm overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-200 bg-white">
-                        <h2 className="text-[15px] font-semibold text-secondary">Log Transaksi</h2>
+                        <h2 className="text-[15px] font-semibold text-secondary">Riwayat Menabung Dana Darurat</h2>
                     </div>
 
-                    {/* Area Tabel */}
                     <Table 
                         columns={columns}
-                        data={logData}
-                        actions={[
-                            { 
-                                label: 'Edit', 
-                                icon: <PencilSimpleIcon size={16} />, 
-                                onClick: (row) => console.log('Edit row:', row) 
-                            },
-                            { 
-                                label: 'Delete', 
-                                icon: <TrashIcon size={16} weight="bold" />, 
-                                onClick: (row) => console.log('Delete row:', row),
-                                variant: 'danger'
-                            },
-                        ]}
+                        data={status.log || []}
                     />
-
-                    {/* Footer Tabel (Pagination) */}
-                    <div className="flex flex-col sm:flex-row justify-between items-center px-5 py-3 border-t border-gray-100 gap-4 bg-[#FAFAFA]/50">
-                        <span className="text-[12px] text-gray-500 font-medium">
-                            Menampilkan 1 - 5 dari 5 hasil
-                        </span>
-
-                        <div className="flex items-center gap-1.5">
-                            <Button size="sm" variant="secondary" className="w-8 h-8 p-0">
-                                <span className="text-[10px]">1</span>
-                            </Button>
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
 
-            {/* Modal Tambah Dana Darurat */}
+            {/* Modal Tambah Dana */}
             <Modal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
@@ -155,47 +159,43 @@ const DanaDarurat = () => {
                 footer={
                     <div className="flex justify-end gap-3">
                         <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>Batal</Button>
-                        <Button variant="primary" onClick={() => setIsAddModalOpen(false)}>Tambah Dana</Button>
+                        <Button variant="primary" onClick={handleAddFund} disabled={loadingAction || !walletId || !amount}>
+                            {loadingAction ? 'Memproses...' : 'Tambah Dana'}
+                        </Button>
                     </div>
                 }
             >
-                <div className="flex flex-col gap-6">
-                    
+                <form className="flex flex-col gap-6">
                     <Select 
                         label="Pilih Dompet Sumber"
-                        placeholder="Misal: Rekening BCA..."
-                        options={walletsData}
+                        placeholder="Pilih dompet..."
+                        options={wallets}
                         value={walletId}
                         onChange={(val) => setWalletId(val)}
                         icon={<WalletIcon size={18} weight="bold" />}
                     />
-                    
                     <Input 
                         label="Jumlah Dana"
-                        placeholder="Masukkan nominal tabungan"
+                        placeholder="Contoh: 500000"
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        icon={<TrendUpIcon size={18} weight="bold" className="text-primary" />}
+                        icon={<TrendUpIcon size={18} weight="bold" className="text-green-500" />}
                     />
-                    
                     <Input 
                         label="Catatan (Opsional)"
-                        placeholder="Misal: Sisa gaji bulan ini"
+                        placeholder="Misal: Alokasi dari sisa belanja"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         type="textarea"
                     />
-
-                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-4">
-                        <p className="text-[12px] text-primary font-medium leading-relaxed">
-                            💡 Menambah dana darurat akan tercatat sebagai transaksi pengeluaran di dompet sumber dengan kategori "Dana Darurat".
-                        </p>
+                    <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 text-[12px] text-primary">
+                        💡 Penambahan dana darurat akan memotong saldo dompet yang dipilih secara otomatis.
                     </div>
-                </div>
+                </form>
             </Modal>
 
-            {/* Modal Ubah Target */}
+            {/* Modal Target */}
             <Modal
                 isOpen={isTargetModalOpen}
                 onClose={() => setIsTargetModalOpen(false)}
@@ -204,37 +204,25 @@ const DanaDarurat = () => {
                 footer={
                     <div className="flex justify-end gap-3">
                         <Button variant="outline" onClick={() => setIsTargetModalOpen(false)}>Batal</Button>
-                        <Button variant="primary" onClick={() => setIsTargetModalOpen(false)}>Update Target</Button>
+                        <Button variant="primary" onClick={handleSetTarget} disabled={loadingAction || !targetAmount}>
+                            {loadingAction ? 'Updating...' : 'Update Target'}
+                        </Button>
                     </div>
                 }
             >
-                <div className="flex flex-col gap-6">
+                <form className="flex flex-col gap-6">
                     <Input 
-                        label="Target Dana Total"
-                        placeholder="Contoh: 15000000"
+                        label="Target Dana Total (Rp)"
+                        placeholder="Masukkan target total dana darurat"
                         value={targetAmount}
                         onChange={(e) => setTargetAmount(e.target.value)}
                         icon={<StackIcon size={18} weight="bold" />}
-                    />
-                    
-                    <Input 
-                        label="Durasi (Bulan)"
-                        placeholder="Contoh: 6"
                         type="number"
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        icon={<GearIcon size={18} weight="bold" />}
                     />
-
-                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col gap-1">
-                        <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Estimasi Menabung</span>
-                        <p className="text-secondary font-semibold">Rp 2.500.000 / Bulan</p>
-                    </div>
-                </div>
+                </form>
             </Modal>
         </div>
     );
 };
 
 export default DanaDarurat;
-

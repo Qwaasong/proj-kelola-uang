@@ -1,27 +1,33 @@
 import { useEffect, useRef } from 'react';
 import Button from './Button';
-import { 
+import {
     InfoIcon,
-    CalendarIcon, 
-    ArrowUpRightIcon, 
-    ArrowDownRightIcon 
+    CalendarIcon,
+    ArrowUpRightIcon,
+    ArrowDownRightIcon
 } from '@phosphor-icons/react';
 import Chart from 'chart.js/auto';
 
-// Data transaksi hari ini untuk ditampilkan
-const todayTransactions = [
-    { label: 'Makan dan Minum', amount: 'Rp 100.000' },
-    { label: 'Transportasi', amount: 'Rp 100.000' },
-    { label: 'Lainnya', amount: 'Rp 12.000' },
+// Data transaksi hari ini - fallback jika belum ada data
+const mockTransactions = [
+    { label: 'Makan dan Minum', amount: 0 },
+    { label: 'Transportasi', amount: 0 },
+    { label: 'Lainnya', amount: 0 },
 ];
 
 /**
  * Komponen LineChart — Grafik area transaksi pemasukan dan pengeluaran hari ini.
  * Menggunakan Chart.js dengan gradient fill dan lifecycle cleanup.
+ * @param {Array} trendData - Data dari grafik_waktu
+ * @param {Object} todayData - Data dari transaksi_hari_ini
  */
-const LineChart = () => {
+const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0, status: "" } }) => {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
+
+    const labels = trendData.length > 0 ? trendData.map(d => `Tgl ${d.hari}`) : ['12 AM', '8 AM', '4 PM', '8 PM'];
+    const dataMasuk = trendData.length > 0 ? trendData.map(d => d.masuk) : [0, 0, 0, 0];
+    const dataKeluar = trendData.length > 0 ? trendData.map(d => d.keluar) : [0, 0, 0, 0];
 
     useEffect(() => {
         if (chartInstance.current) chartInstance.current.destroy();
@@ -40,11 +46,11 @@ const LineChart = () => {
         chartInstance.current = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['12 AM', '8 AM', '4 PM', '8 PM'],
+                labels: labels,
                 datasets: [
                     {
                         label: 'Pengeluaran',
-                        data: [125, 80, 175, 105],
+                        data: dataKeluar,
                         borderColor: '#FF8A8A',
                         backgroundColor: gradRed,
                         borderWidth: 2,
@@ -54,7 +60,7 @@ const LineChart = () => {
                     },
                     {
                         label: 'Pemasukan',
-                        data: [42, 55, 80, 52],
+                        data: dataMasuk,
                         borderColor: '#8093F1',
                         backgroundColor: gradBlue,
                         borderWidth: 2,
@@ -101,16 +107,17 @@ const LineChart = () => {
             {/* Total Transaksi */}
             <div className="mb-5">
                 <p className="text-[28px] font-semibold flex items-baseline gap-1">
-                    <span className="text-sm text-gray-400 font-medium">Rp</span> 985.000
+                    <span className="text-sm text-gray-400 font-medium">Rp</span> {new Intl.NumberFormat('id-ID').format(todayData.Pemasukan - todayData.Pengeluaran)}
                 </p>
+                <p className="text-[11px] text-gray-500 font-medium mt-1">{todayData.status || "Pencatatan hari ini"}</p>
             </div>
 
-            {/* Daftar Kategori Transaksi */}
+            {/* Daftar Kategori Transaksi - Berdasarkan data asli atau fallback mock */}
             <div className="space-y-3 mb-6 text-[13px] font-medium">
-                {todayTransactions.map((trx, idx) => (
+                {(todayData.detail && todayData.detail.length > 0 ? todayData.detail : mockTransactions).map((trx, idx) => (
                     <div key={idx} className="flex justify-between">
                         <span className="text-gray-600">{trx.label}</span>
-                        <span>{trx.amount}</span>
+                        <span>Rp {new Intl.NumberFormat('id-ID').format(trx.amount)}</span>
                     </div>
                 ))}
             </div>
