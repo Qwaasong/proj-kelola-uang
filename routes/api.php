@@ -11,12 +11,11 @@ if (str_starts_with($uri, $base_path)) {
     $uri = substr($uri, 4); // Hapus '/api'
 }
 
-// === DEBUGGER (Pindahkan ke paling atas agar tidak terhambat koneksi DB) ===
+// === DEBUGGER ===
 if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
     if (str_contains($_SERVER['REQUEST_URI'], 'debug_info') || !str_contains($uri, '/')) {
-        // Jika ada param debug atau jika endpoint kosong
+        // Biarkan lolos untuk debugger
     }
-    // Sesuai permintaan: "api hanya menampilkan request-nya saja" (saat dev dan endpoint tidak ada)
 }
 
 require_once __DIR__ . '/../app/core/Response.php';
@@ -26,7 +25,6 @@ require_once __DIR__ . '/../app/controllers/DashboardController.php';
 require_once __DIR__ . '/../app/controllers/DompetController.php'; 
 require_once __DIR__ . '/../app/controllers/TransaksiController.php'; 
 require_once __DIR__ . '/../app/controllers/HalamanController.php';
-
 
 // Inisialisasi Controller Baru
 $otentikasi = new OtentikasiController();
@@ -69,6 +67,13 @@ if ($uri === '/target' && $method === 'DELETE') { $halaman->hapusTarget(); exit(
 // === LAPORAN ===
 if ($uri === '/laporan' && $method === 'GET') { $halaman->getLaporan(); exit(); }
 
+// === EXPORT PDF (ROUTE BARU) ===
+if ($uri === '/laporan/export-pdf' && $method === 'GET') { 
+    require_once __DIR__ . '/../app/controllers/ReportController.php';
+    (new ReportController())->exportPdf(); 
+    exit(); 
+}
+
 // Jika endpoint tidak ada
 if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
     Response::json(200, "debug_info", [
@@ -89,6 +94,5 @@ if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
     ]);
     exit();
 }
-
 
 Response::json(404, "error", "Endpoint tidak ditemukan!");
