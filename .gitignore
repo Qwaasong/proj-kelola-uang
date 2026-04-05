@@ -2,3 +2,4 @@ frontend/node_modules/
 .env                     
 frontend/dist/
 vendor
+composer.lock
