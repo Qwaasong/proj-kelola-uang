@@ -150,7 +150,7 @@ const Dompet = () => {
         }
     };
 
-    if (isFirstLoad || (loadingDompet && !dompetData)) {
+    if (isFirstLoad || !dompetData) {
         return <DompetSkeleton />;
     }
 
@@ -170,7 +170,7 @@ const Dompet = () => {
             </div>
 
             <div className="px-8 pb-10 w-full max-w-[1400px]">
-                {!wallets.length ? (
+                {dompetData && !wallets.length ? (
                     <div className="max-w-[750px] bg-white rounded-xl ring-1 ring-gray-950/5 p-8">
                         <EmptyState 
                             title="Dompet Anda Masih Kosong"

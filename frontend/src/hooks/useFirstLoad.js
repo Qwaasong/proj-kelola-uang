@@ -14,25 +14,14 @@ import { useState, useEffect } from 'react';
  * @returns {boolean} isLoading - true selama skeleton seharusnya ditampilkan
  */
 const useFirstLoad = (pageKey, duration = 250) => {
-    const storageKey = `laeva_loaded_${pageKey}`;
-
-    // Cek apakah halaman ini sudah pernah dimuat di sesi ini
-    const hasLoadedBefore = sessionStorage.getItem(storageKey) === 'true';
-
-    const [isLoading, setIsLoading] = useState(!hasLoadedBefore);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Jika sudah pernah dimuat, tidak perlu timer — langsung keluar
-        if (hasLoadedBefore) return;
-
         const timer = setTimeout(() => {
-            // Tandai halaman sudah pernah dimuat di sesi ini
-            sessionStorage.setItem(storageKey, 'true');
             setIsLoading(false);
         }, duration);
 
         return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return isLoading;

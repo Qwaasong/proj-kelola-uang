@@ -123,7 +123,7 @@ const Goal = () => {
         },
     ];
 
-    if (isFirstLoad || (loadingGoals && !goalData)) return <GoalSkeleton />;
+    if (isFirstLoad || !goalData) return <GoalSkeleton />;
 
     const totalTarget = goals.reduce((acc, g) => acc + parseFloat(g.jumlah_target), 0);
     const totalTerkumpul = goals.reduce((acc, g) => acc + parseFloat(g.terkumpul), 0);
@@ -152,7 +152,7 @@ const Goal = () => {
                         <h2 className="text-[15px] font-semibold text-secondary">Daftar Goal Saya</h2>
                     </div>
 
-                    {!goals.length ? (
+                    {goalData && !goals.length ? (
                         <EmptyState 
                             title="Belum Ada Target Keuangan yang Dibuat"
                             description="Tentukan impian finansial Anda, seperti beli gadget baru atau liburan, dan pantau progres menabungnya di sini."

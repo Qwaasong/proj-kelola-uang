@@ -376,7 +376,7 @@ const Laporan = () => {
         },
     ];
 
-    if (isFirstLoad || (loading && !reportData)) {
+    if (isFirstLoad || !reportData) {
         return <LaporanSkeleton />;
     }
 
@@ -430,7 +430,7 @@ const Laporan = () => {
                     <SummaryCard title="Tingkat Tabungan" amount={stats.saving_rate} showRp={false} suffix="%" />
                 </div>
 
-                {!(stats.total_pemasukan > 0 || stats.total_pengeluaran > 0 || stats.per_kategori?.length > 0) ? (
+                {reportData && !(stats.total_pemasukan > 0 || stats.total_pengeluaran > 0 || stats.per_kategori?.length > 0) ? (
                     <div className="bg-white rounded-xl ring-1 ring-gray-950/5 p-12">
                         <EmptyState 
                             title="Tidak Ada Data Laporan untuk Periode Ini"

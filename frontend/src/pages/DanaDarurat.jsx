@@ -93,7 +93,7 @@ const DanaDarurat = () => {
         { label: 'Tanggal', key: 'tanggal', align: 'right', className: 'text-gray-500' },
     ];
 
-    if (isFirstLoad || (loadingStatus && !statusData)) {
+    if (isFirstLoad || !statusData) {
         return <DanaDaruratSkeleton />;
     }
 
@@ -144,7 +144,7 @@ const DanaDarurat = () => {
                         <h2 className="text-[15px] font-semibold text-secondary">Riwayat Menabung Dana Darurat</h2>
                     </div>
 
-                    {(!status.log || status.log.length === 0) ? (
+                    {statusData && (!status.log || status.log.length === 0) ? (
                         <EmptyState 
                             title="Belum Ada Riwayat Menabung Dana Darurat"
                             description="Mulai alokasikan dana dari dompet Anda untuk membangun jaring pengaman keuangan di masa depan."

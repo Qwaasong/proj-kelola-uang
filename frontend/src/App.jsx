@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import TopHeader from './components/TopHeader';
 
@@ -9,6 +9,12 @@ import TopHeader from './components/TopHeader';
  */
 const App = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const { pathname } = useLocation();
+
+    // Scroll to Top & Reset UI on Navigation
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
 
     const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
@@ -21,10 +27,12 @@ const App = () => {
                 toggleSidebar={toggleSidebar} 
             />
 
-            {/* Area Konten Utama (Outlet) */}
-            <div className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto">
+            {/* Area Konten Utama (Outlet) — Animasi Fade-In */}
+            <div className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto scroll-smooth">
                 <TopHeader />
-                <Outlet />
+                <main key={pathname} className="animate-page-fade">
+                    <Outlet />
+                </main>
             </div>
 
         </div>

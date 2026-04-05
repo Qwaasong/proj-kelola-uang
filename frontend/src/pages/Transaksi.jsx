@@ -243,7 +243,7 @@ const Transaksi = () => {
         },
     ];
 
-    if (isFirstLoad || (loadingTx && !txData)) {
+    if (isFirstLoad || !txData) {
         return <TransaksiSkeleton />;
     }
 
@@ -326,7 +326,7 @@ const Transaksi = () => {
                         </div>
                     </div>
 
-                    {!transactions.length ? (
+                    {txData && !transactions.length ? (
                         <EmptyState 
                             title="Anda Belum Memiliki Catatan Transaksi"
                             description="Mulai catat pengeluaran dan pemasukan harian Anda untuk melacak keuangan dengan lebih baik."

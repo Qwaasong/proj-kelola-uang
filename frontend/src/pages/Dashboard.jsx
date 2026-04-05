@@ -55,12 +55,12 @@ const Dashboard = () => {
         loadDashboard();
     }, [fetchDashboard, navigate]);
 
-    if (isFirstLoad || (loading && !data)) {
-        return <DashboardSkeleton />;
-    }
-
     if (error && !data) {
         return <div className="p-8 text-red-500 font-medium">Error: {error.message}</div>;
+    }
+
+    if (isFirstLoad || !data) {
+        return <DashboardSkeleton />;
     }
 
     // Cek apakah ada data untuk ditampilkan (pemasukan/pengeluaran > 0)
@@ -91,7 +91,7 @@ const Dashboard = () => {
             {/* Konten Grid */}
             <div className="px-8 pb-10 flex flex-col gap-6 w-full">
 
-                {!hasActivity ? (
+                {data && !hasActivity ? (
                     <EmptyState 
                         title="Belum Ada Transaksi yang Dilakukan !"
                         buttonText="Tambah Transaksi"
