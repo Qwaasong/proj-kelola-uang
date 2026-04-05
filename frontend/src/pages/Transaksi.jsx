@@ -56,8 +56,19 @@ const Transaksi = () => {
 
     // --- State Pagination & Search ---
     const [page, setPage] = useState(1);
+    const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const [limit] = useState(10);
+
+    // Debounce Search Logic
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setSearch(searchInput);
+            setPage(1); // Kembali ke halaman 1 setiap kali melakukan pencarian baru
+        }, 500);
+
+        return () => clearTimeout(handler);
+    }, [searchInput]);
 
     // --- State Modals ---
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -320,8 +331,8 @@ const Transaksi = () => {
                                 placeholder="Cari transaksi..."
                                 icon={<MagnifyingGlassIcon size={18} />}
                                 size="md"
-                                value={search}
-                                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
                             />
                         </div>
                     </div>

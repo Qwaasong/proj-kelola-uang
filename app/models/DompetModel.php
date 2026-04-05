@@ -62,6 +62,16 @@ class DompetModel {
         }
     }
 
+    public function update($id, $user_id, $nama_dompet, $saldo) {
+        $query = "UPDATE dompet SET nama_dompet = :nama_dompet, saldo = :saldo WHERE id = :id AND user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':nama_dompet', $nama_dompet);
+        $stmt->bindParam(':saldo', $saldo);
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':user_id', $user_id);
+        return $stmt->execute();
+    }
+
     public function delete($id, $user_id) {
         $query = "DELETE FROM dompet WHERE id = :id AND user_id = :user_id";
         $stmt = $this->conn->prepare($query);

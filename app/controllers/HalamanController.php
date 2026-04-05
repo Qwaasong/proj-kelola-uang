@@ -16,7 +16,7 @@ class HalamanController {
     public function getDanaDarurat() {
         $user = $this->otentikasi();
         $model = new DanaDaruratModel();
-        Response::json(200, "success", $model->get($user['id']) ?: ["jumlah_target" => 0, "jumlah_terkumpul" => 0]);
+        Response::json(200, "success", $model->get($user['id']));
     }
     public function setTargetDana() {
         $user = $this->otentikasi();

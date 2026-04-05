@@ -69,6 +69,8 @@ const Dompet = () => {
 
     // --- State Modal & Form ---
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingWallet, setEditingWallet] = useState(null);
     const [walletName, setWalletName] = useState('');
     const [walletBalance, setWalletBalance] = useState('');
 
@@ -121,6 +123,31 @@ const Dompet = () => {
             loadData();
         } catch (err) {
             alert("Gagal menambah dompet: " + err.message);
+        }
+    };
+
+    const handleOpenEditModal = (wallet) => {
+        setEditingWallet(wallet);
+        setWalletName(wallet.nama_dompet);
+        setWalletBalance(wallet.saldo);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateWallet = async (e) => {
+        e.preventDefault();
+        try {
+            await actionApi('PUT', '/dompet', { 
+                id: editingWallet.id,
+                nama_dompet: walletName, 
+                saldo: walletBalance 
+            });
+            setIsEditModalOpen(false);
+            setWalletName('');
+            setWalletBalance('');
+            setEditingWallet(null);
+            loadData();
+        } catch (err) {
+            alert("Gagal memperbarui dompet: " + err.message);
         }
     };
 
@@ -188,7 +215,7 @@ const Dompet = () => {
                                 key={wallet.id}
                                 title={wallet.nama_dompet}
                                 amount={wallet.saldo}
-                                onEdit={() => alert("Fitur edit akan segera hadir!")}
+                                onEdit={() => handleOpenEditModal(wallet)}
                                 onTransfer={() => {
                                     setSourceWallet(wallet);
                                     setIsTransferModalOpen(true);
@@ -282,6 +309,56 @@ const Dompet = () => {
                         />
                     </form>
                 </div>
+            </Modal>
+
+            {/* Modal Edit Dompet */}
+            <Modal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setWalletName('');
+                    setWalletBalance('');
+                    setEditingWallet(null);
+                }}
+                title="Edit Dompet"
+                size="md"
+                footer={
+                    <div className="flex justify-end gap-3">
+                        <Button variant="outline" onClick={() => {
+                            setIsEditModalOpen(false);
+                            setWalletName('');
+                            setWalletBalance('');
+                            setEditingWallet(null);
+                        }}>Batal</Button>
+                        <Button 
+                            variant="primary" 
+                            onClick={handleUpdateWallet}
+                            disabled={!walletName || walletBalance === '' || loadingAction}
+                        >
+                            {loadingAction ? 'Memperbarui...' : 'Simpan Perubahan'}
+                        </Button>
+                    </div>
+                }
+            >
+                <form className="flex flex-col gap-5">
+                    <Input 
+                        label="Nama Dompet"
+                        placeholder="Misal: Kantong Jajan, Bank Mandiri"
+                        value={walletName}
+                        onChange={(e) => setWalletName(e.target.value)}
+                        icon={<WalletIcon size={18} weight="bold" />}
+                        required
+                    />
+                    <Input 
+                        label="Saldo / Dana"
+                        placeholder="Contoh: 1000000"
+                        value={walletBalance}
+                        onChange={(e) => setWalletBalance(e.target.value)}
+                        icon={<BankIcon size={18} weight="bold" />}
+                        type="number"
+                        required
+                    />
+                </form>
             </Modal>
         </>
     );

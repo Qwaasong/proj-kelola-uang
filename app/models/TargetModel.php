@@ -30,7 +30,7 @@ class TargetModel {
             $this->conn->prepare("UPDATE target_finansial SET terkumpul = terkumpul + :jumlah WHERE id = :gid AND user_id = :uid")
                  ->execute([':jumlah' => $jumlah, ':gid' => $target_id, ':uid' => $user_id]);
 
-            $this->conn->prepare("INSERT INTO transaksi (user_id, dompet_id, target_id, nama_transaksi, jenis, tipe, jumlah, tanggal) 
+            $this->conn->prepare("INSERT INTO transaksi (user_id, dompet_id, target_id, keterangan, jenis, tipe, jumlah, tanggal) 
                                   VALUES (:uid, :did, :gid, 'Nabung Target', 'Tabungan', 'BARU', :jumlah, CURRENT_DATE())")
                  ->execute([':uid' => $user_id, ':did' => $dompet_id, ':gid' => $target_id, ':jumlah' => $jumlah]);
 

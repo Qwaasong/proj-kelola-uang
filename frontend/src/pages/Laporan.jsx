@@ -20,55 +20,8 @@ import LaporanSkeleton from '../components/LaporanSkeleton';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 
-// --- Data Dummy ---
+// Deklarasi Variabel
 const PERIODS = ['Minggu Ini', 'Bulan Ini', '3 Bulan', 'Tahun Ini'];
-
-const trendData = {
-    'Minggu Ini': {
-        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-        pemasukan: [400000, 0, 250000, 0, 600000, 0, 0],
-        pengeluaran: [120000, 85000, 200000, 50000, 175000, 310000, 0],
-    },
-    'Bulan Ini': {
-        labels: ['Mg 1', 'Mg 2', 'Mg 3', 'Mg 4'],
-        pemasukan: [2400000, 0, 2400000, 0],
-        pengeluaran: [800000, 650000, 750000, 580000],
-    },
-    '3 Bulan': {
-        labels: ['Feb', 'Mar', 'Apr'],
-        pemasukan: [4800000, 4800000, 4800000],
-        pengeluaran: [3200000, 3650000, 2780000],
-    },
-    'Tahun Ini': {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
-        pemasukan: [4800000, 4800000, 4800000, 4800000, 4800000, 4800000, 0, 0, 0, 0, 0, 0],
-        pengeluaran: [3800000, 3200000, 3650000, 2780000, 0, 0, 0, 0, 0, 0, 0, 0],
-    },
-};
-
-const categoryData = [
-    { label: 'Makan & Minum', value: 35, color: '#408A71' },
-    { label: 'Transportasi', value: 20, color: '#639E88' },
-    { label: 'Hiburan', value: 15, color: '#8093F1' },
-    { label: 'Dana Darurat', value: 18, color: '#FF8A8A' },
-    { label: 'Lainnya', value: 12, color: '#FBB040' },
-];
-
-const topPengeluaran = [
-    { id: 1, deskripsi: 'Makan Siang Kantin', kategori: 'Makan & Minum', tanggal: '28 Mar 2026', jumlah: '125.000' },
-    { id: 2, deskripsi: 'Grab Car ke Kantor', kategori: 'Transportasi', tanggal: '27 Mar 2026', jumlah: '87.000' },
-    { id: 3, deskripsi: 'Netflix Langganan', kategori: 'Hiburan', tanggal: '25 Mar 2026', jumlah: '75.000' },
-    { id: 4, deskripsi: 'Belanja Mingguan', kategori: 'Kebutuhan', tanggal: '24 Mar 2026', jumlah: '320.000' },
-    { id: 5, deskripsi: 'Transfer Dana Darurat', kategori: 'Dana Darurat', tanggal: '20 Mar 2026', jumlah: '500.000' },
-];
-
-const CATEGORY_BADGE_COLORS = {
-    'Makan & Minum': 'bg-gray-100 text-gray-600',
-    'Transportasi': 'bg-gray-100 text-gray-600',
-    'Hiburan': 'bg-gray-100 text-gray-600',
-    'Kebutuhan': 'bg-gray-100 text-gray-600',
-    'Dana Darurat': 'bg-gray-100 text-gray-600',
-};
 
 // --- Komponen Area Chart Tren ---
 const TrendAreaChart = ({ period, data }) => {
@@ -359,7 +312,7 @@ const Laporan = () => {
     const formatIDR = (num) => new Intl.NumberFormat('id-ID').format(num || 0);
 
     const tableColumns = [
-        { label: 'Deskripsi', key: 'nama_transaksi' },
+        { label: 'Deskripsi', key: 'keterangan' },
         {
             label: 'Kategori', key: 'nama_kategori',
             render: (val) => (

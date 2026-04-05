@@ -46,6 +46,7 @@ if ($uri === '/dashboard' && $method === 'GET') { $dashboard->getDashboard(); ex
 if ($uri === '/dompet' && $method === 'GET') { $dompet->getDompet(); exit(); }
 if ($uri === '/dompet' && $method === 'POST') { $dompet->addDompet(); exit(); }
 if ($uri === '/dompet/transfer' && $method === 'PUT') { $dompet->transferDompet(); exit(); }
+if ($uri === '/dompet' && $method === 'PUT') { $dompet->editDompet(); exit(); }
 if ($uri === '/dompet' && $method === 'DELETE') { $dompet->hapus(); exit(); }
 
 // === TRANSAKSI & KATEGORI ===

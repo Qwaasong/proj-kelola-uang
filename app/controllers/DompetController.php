@@ -59,6 +59,21 @@ class DompetController {
         }
     }
 
+    public function editDompet() {
+        $user = $this->authenticate(); // WAJIB LOGIN
+        $data = json_decode(file_get_contents("php://input"));
+
+        if(isset($data->id) && isset($data->nama_dompet) && isset($data->saldo)) {
+            if($this->dompetModel->update($data->id, $user['id'], $data->nama_dompet, $data->saldo)) {
+                Response::json(200, "success", "Dompet berhasil diperbarui!");
+            } else {
+                Response::json(500, "error", "Gagal memperbarui dompet.");
+            }
+        } else {
+            Response::json(400, "error", "Data tidak lengkap! Butuh: id, nama_dompet, saldo.");
+        }
+    }
+
     public function hapus() {
         $user = $this->authenticate();
         $id = isset($_GET['id']) ? $_GET['id'] : null;
