@@ -2,7 +2,7 @@
  * API Utility - Centralizes fetch interaction logic.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost/proj-kelola-uang/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * Standardized fetch wrapper.
@@ -44,6 +44,12 @@ export const apiFetch = async (endpoint, options = {}) => {
         }
 
         if (!response.ok) {
+            // Handle 401 Unauthorized globally: clear token to break potential loops
+            if (response.status === 401) {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user');
+            }
+
             // Handle error response from server
             const error = new Error(data?.message || `API Error: ${response.status} ${response.statusText}`);
             error.status = response.status;

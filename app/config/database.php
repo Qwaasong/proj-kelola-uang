@@ -21,7 +21,11 @@ class Database {
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch(PDOException $exception) {
             header('Content-Type: application/json');
-            echo json_encode(["status" => "error", "message" => "Connection error: " . $exception->getMessage()]);
+            $isDebug = Env::get('APP_DEBUG', 'false') === 'true';
+            $message = $isDebug 
+                ? "Connection error: " . $exception->getMessage() 
+                : "Terjadi kesalahan pada server. Silakan coba lagi nanti.";
+            echo json_encode(["status" => "error", "message" => $message]);
             exit;
         }
     }

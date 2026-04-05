@@ -70,12 +70,33 @@ class JwtHelper {
 
     // Fungsi otomatis untuk mengecek Header Authorization
     public static function getAuthorizedUser() {
-        $headers = apache_request_headers();
-        if(isset($headers['Authorization'])) {
-            $authHeader = $headers['Authorization'];
+        $authHeader = null;
+
+        // Mencoba berbagai cara mendapatkan header Authorization (mendukung PHP-FPM, Apache, Nginx, dan php -S)
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        } elseif (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            // Cek Case-Insensitive untuk key 'Authorization'
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'authorization') {
+                    $authHeader = $value;
+                    break;
+                }
+            }
+        } elseif (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+            if (isset($headers['Authorization'])) {
+                $authHeader = $headers['Authorization'];
+            }
+        }
+
+        if ($authHeader) {
             // Pisahkan kata "Bearer " dari token
             $parts = explode(" ", $authHeader);
-            if(count($parts) == 2 && $parts[0] === "Bearer") {
+            if(count($parts) == 2 && (strtolower($parts[0]) === "bearer")) {
                 $token = $parts[1];
                 return self::validateToken($token);
             }

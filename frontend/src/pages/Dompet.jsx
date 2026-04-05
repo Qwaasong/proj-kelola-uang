@@ -4,6 +4,7 @@ import useFirstLoad from '../hooks/useFirstLoad';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
 import Select from '../components/Select';
+import EmptyState from '../components/EmptyState';
 import { useState, useMemo, useEffect } from 'react';
 import { WalletIcon, BankIcon, ArrowsLeftRightIcon, TrashIcon } from '@phosphor-icons/react';
 import useApi from '../hooks/useApi';
@@ -169,24 +170,34 @@ const Dompet = () => {
             </div>
 
             <div className="px-8 pb-10 w-full max-w-[1400px]">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-w-[750px]">
-                    {wallets.map((wallet) => (
-                        <WalletCard
-                            key={wallet.id}
-                            title={wallet.nama_dompet}
-                            amount={wallet.saldo}
-                            onEdit={() => alert("Fitur edit akan segera hadir!")}
-                            onTransfer={() => {
-                                setSourceWallet(wallet);
-                                setIsTransferModalOpen(true);
-                            }}
-                            onDelete={() => handleDelete(wallet.id)}
+                {!wallets.length ? (
+                    <div className="max-w-[750px] bg-white rounded-xl ring-1 ring-gray-950/5 p-8">
+                        <EmptyState 
+                            title="Dompet Anda Masih Kosong"
+                            description="Tambahkan dompet atau rekening bank untuk mulai mencatat saldo dan mengelola dana Anda secara terpusat."
+                            buttonText="Tambah Dompet Baru"
+                            onButtonClick={() => setIsModalOpen(true)}
+                            icon={<WalletIcon size={18} weight="bold" />}
+                            className="py-8"
                         />
-                    ))}
-                    {wallets.length === 0 && (
-                        <p className="text-gray-400 italic">Belum ada dompet. Tambahkan sekarang!</p>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-w-[750px]">
+                        {wallets.map((wallet) => (
+                            <WalletCard
+                                key={wallet.id}
+                                title={wallet.nama_dompet}
+                                amount={wallet.saldo}
+                                onEdit={() => alert("Fitur edit akan segera hadir!")}
+                                onTransfer={() => {
+                                    setSourceWallet(wallet);
+                                    setIsTransferModalOpen(true);
+                                }}
+                                onDelete={() => handleDelete(wallet.id)}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Modal Tambah Dompet */}

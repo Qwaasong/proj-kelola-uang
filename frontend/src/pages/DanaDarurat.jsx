@@ -12,6 +12,7 @@ import DanaDaruratSkeleton from '../components/DanaDaruratSkeleton';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
 import Select from '../components/Select';
+import EmptyState from '../components/EmptyState';
 import { useState, useEffect, useMemo } from 'react';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
@@ -143,10 +144,20 @@ const DanaDarurat = () => {
                         <h2 className="text-[15px] font-semibold text-secondary">Riwayat Menabung Dana Darurat</h2>
                     </div>
 
-                    <Table 
-                        columns={columns}
-                        data={status.log || []}
-                    />
+                    {(!status.log || status.log.length === 0) ? (
+                        <EmptyState 
+                            title="Belum Ada Riwayat Menabung Dana Darurat"
+                            description="Mulai alokasikan dana dari dompet Anda untuk membangun jaring pengaman keuangan di masa depan."
+                            buttonText="Tambah Dana Darurat"
+                            onButtonClick={() => setIsAddModalOpen(true)}
+                            className="py-12"
+                        />
+                    ) : (
+                        <Table 
+                            columns={columns}
+                            data={status.log || []}
+                        />
+                    )}
                 </div>
             </div>
 

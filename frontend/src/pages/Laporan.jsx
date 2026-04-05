@@ -14,6 +14,7 @@ import Chart from 'chart.js/auto';
 import SummaryCard from '../components/SummaryCard';
 import Table from '../components/Table';
 import Button from '../components/Button';
+import EmptyState from '../components/EmptyState';
 import useFirstLoad from '../hooks/useFirstLoad';
 import LaporanSkeleton from '../components/LaporanSkeleton';
 import useApi from '../hooks/useApi';
@@ -429,23 +430,37 @@ const Laporan = () => {
                     <SummaryCard title="Tingkat Tabungan" amount={stats.saving_rate} showRp={false} suffix="%" />
                 </div>
 
-                {/* Area Chart Tren Arus Kas — Full Width */}
-                <TrendAreaChart period={activePeriod} data={stats.trend} />
-
-                {/* Dua Grafik Side by Side */}
-                <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-                    <MonthlyBarChart data={stats.comparison} />
-                    <CategoryStatsCard data={stats.per_kategori} totalAmount={stats.total_pengeluaran} />
-                </div>
-
-                {/* Tabel Top Pengeluaran */}
-                <div className="bg-white rounded-xl ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 bg-white">
-                        <h2 className="text-[15px] font-semibold text-secondary">Top Pengeluaran</h2>
-                        <p className="text-[12px] text-gray-400 mt-0.5">5 transaksi dengan nominal terbesar di periode ini</p>
+                {!(stats.total_pemasukan > 0 || stats.total_pengeluaran > 0 || stats.per_kategori?.length > 0) ? (
+                    <div className="bg-white rounded-xl ring-1 ring-gray-950/5 p-12">
+                        <EmptyState 
+                            title="Tidak Ada Data Laporan untuk Periode Ini"
+                            description="Sepertinya belum ada aktivitas keuangan yang tercatat pada rentang waktu yang Anda pilih."
+                            buttonText="Kembali ke Dashboard"
+                            onButtonClick={() => navigate('/')}
+                            className="py-10"
+                        />
                     </div>
-                    <Table columns={tableColumns} data={stats.transaksi_terbesar} />
-                </div>
+                ) : (
+                    <>
+                        {/* Area Chart Tren Arus Kas — Full Width */}
+                        <TrendAreaChart period={activePeriod} data={stats.trend} />
+
+                        {/* Dua Grafik Side by Side */}
+                        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+                            <MonthlyBarChart data={stats.comparison} />
+                            <CategoryStatsCard data={stats.per_kategori} totalAmount={stats.total_pengeluaran} />
+                        </div>
+
+                        {/* Tabel Top Pengeluaran */}
+                        <div className="bg-white rounded-xl ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] overflow-hidden">
+                            <div className="px-6 py-4 border-b border-gray-200 bg-white">
+                                <h2 className="text-[15px] font-semibold text-secondary">Top Pengeluaran</h2>
+                                <p className="text-[12px] text-gray-400 mt-0.5">5 transaksi dengan nominal terbesar di periode ini</p>
+                            </div>
+                            <Table columns={tableColumns} data={stats.transaksi_terbesar} />
+                        </div>
+                    </>
+                )}
 
             </div>
         </div>

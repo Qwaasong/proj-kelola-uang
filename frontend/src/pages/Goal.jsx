@@ -13,6 +13,7 @@ import GoalSkeleton from '../components/GoalSkeleton';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
 import Select from '../components/Select';
+import EmptyState from '../components/EmptyState';
 import { useState, useMemo, useEffect } from 'react';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
@@ -151,23 +152,33 @@ const Goal = () => {
                         <h2 className="text-[15px] font-semibold text-secondary">Daftar Goal Saya</h2>
                     </div>
 
-                    <Table
-                        columns={columns}
-                        data={goals}
-                        actions={[
-                            {
-                                label: 'Tabung',
-                                icon: <TrendUpIcon size={16} weight="bold" />,
-                                onClick: (row) => { setSelectedGoal(row); setIsSaveModalOpen(true); }
-                            },
-                            {
-                                label: 'Delete',
-                                icon: <TrashIcon size={16} weight="bold" />,
-                                onClick: (row) => handleDeleteGoal(row.id),
-                                variant: 'danger'
-                            },
-                        ]}
-                    />
+                    {!goals.length ? (
+                        <EmptyState 
+                            title="Belum Ada Target Keuangan yang Dibuat"
+                            description="Tentukan impian finansial Anda, seperti beli gadget baru atau liburan, dan pantau progres menabungnya di sini."
+                            buttonText="Buat Target Sekarang"
+                            onButtonClick={() => setIsAddModalOpen(true)}
+                            className="py-12"
+                        />
+                    ) : (
+                        <Table
+                            columns={columns}
+                            data={goals}
+                            actions={[
+                                {
+                                    label: 'Tabung',
+                                    icon: <TrendUpIcon size={16} weight="bold" />,
+                                    onClick: (row) => { setSelectedGoal(row); setIsSaveModalOpen(true); }
+                                },
+                                {
+                                    label: 'Delete',
+                                    icon: <TrashIcon size={16} weight="bold" />,
+                                    onClick: (row) => handleDeleteGoal(row.id),
+                                    variant: 'danger'
+                                },
+                            ]}
+                        />
+                    )}
                 </div>
             </div>
 

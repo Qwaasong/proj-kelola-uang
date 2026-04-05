@@ -26,7 +26,7 @@ const Login = () => {
         
         try {
             const response = await login('POST', '/otentikasi/masuk', { username, password });
-            console.log("Login sukses:", response);
+
             
             if (response.data && response.data.token) {
                 localStorage.setItem('auth_token', response.data.token);

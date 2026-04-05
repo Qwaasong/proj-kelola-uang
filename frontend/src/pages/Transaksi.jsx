@@ -21,6 +21,7 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import Modal from '../components/Modal';
 import Select from '../components/Select';
+import EmptyState from '../components/EmptyState';
 import useFirstLoad from '../hooks/useFirstLoad';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
@@ -325,51 +326,63 @@ const Transaksi = () => {
                         </div>
                     </div>
 
-                    <Table 
-                        columns={columns}
-                        data={transactions}
-                        selectedRows={selectedRows}
-                        onToggleSelect={handleToggleSelectRow}
-                        onSelectAll={handleSelectAll}
-                        actions={[
-                            { 
-                                label: 'Edit', 
-                                icon: <PencilSimpleIcon size={16} />, 
-                                onClick: (row) => handleOpenEdit(row) 
-                            },
-                            { 
-                                label: 'Delete', 
-                                icon: <TrashIcon size={16} weight="bold" />, 
-                                onClick: (row) => handleDelete(row.id),
-                                variant: 'danger'
-                            },
-                        ]}
-                    />
+                    {!transactions.length ? (
+                        <EmptyState 
+                            title="Anda Belum Memiliki Catatan Transaksi"
+                            description="Mulai catat pengeluaran dan pemasukan harian Anda untuk melacak keuangan dengan lebih baik."
+                            buttonText="Buat Transaksi Pertama"
+                            onButtonClick={handleOpenAdd}
+                            className="py-20"
+                        />
+                    ) : (
+                        <>
+                            <Table 
+                                columns={columns}
+                                data={transactions}
+                                selectedRows={selectedRows}
+                                onToggleSelect={handleToggleSelectRow}
+                                onSelectAll={handleSelectAll}
+                                actions={[
+                                    { 
+                                        label: 'Edit', 
+                                        icon: <PencilSimpleIcon size={16} />, 
+                                        onClick: (row) => handleOpenEdit(row) 
+                                    },
+                                    { 
+                                        label: 'Delete', 
+                                        icon: <TrashIcon size={16} weight="bold" />, 
+                                        onClick: (row) => handleDelete(row.id),
+                                        variant: 'danger'
+                                    },
+                                ]}
+                            />
 
-                    <div className="flex flex-col sm:flex-row justify-between items-center px-5 py-3 border-t border-gray-100 gap-4 bg-[#FAFAFA]/50">
-                        <span className="text-[12px] text-gray-500 font-medium">
-                            Halaman {pagination.current_page} dari {pagination.total_page} ({pagination.total_data} transaksi)
-                        </span>
-                        <div className="flex items-center gap-1.5">
-                            <Button 
-                                size="sm" variant="secondary" className="w-8 h-8 p-0"
-                                disabled={page === 1}
-                                onClick={() => setPage(page - 1)}
-                            >
-                                <CaretLeftIcon size={14} weight="bold" />
-                            </Button>
-                            <Button size="sm" variant="secondary" className="w-8 h-8 p-0 font-bold">
-                                {page}
-                            </Button>
-                            <Button 
-                                size="sm" variant="secondary" className="w-8 h-8 p-0"
-                                disabled={page === pagination.total_page}
-                                onClick={() => setPage(page + 1)}
-                            >
-                                <CaretRightIcon size={14} weight="bold" />
-                            </Button>
-                        </div>
-                    </div>
+                            <div className="flex flex-col sm:flex-row justify-between items-center px-5 py-3 border-t border-gray-100 gap-4 bg-[#FAFAFA]/50">
+                                <span className="text-[12px] text-gray-500 font-medium">
+                                    Halaman {pagination.current_page} dari {pagination.total_page} ({pagination.total_data} transaksi)
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                    <Button 
+                                        size="sm" variant="secondary" className="w-8 h-8 p-0"
+                                        disabled={page === 1}
+                                        onClick={() => setPage(page - 1)}
+                                    >
+                                        <CaretLeftIcon size={14} weight="bold" />
+                                    </Button>
+                                    <Button size="sm" variant="secondary" className="w-8 h-8 p-0 font-bold">
+                                        {page}
+                                    </Button>
+                                    <Button 
+                                        size="sm" variant="secondary" className="w-8 h-8 p-0"
+                                        disabled={page === pagination.total_page}
+                                        onClick={() => setPage(page + 1)}
+                                    >
+                                        <CaretRightIcon size={14} weight="bold" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

@@ -3,6 +3,7 @@ import SummaryCard from '../components/SummaryCard';
 import BarChart from '../components/BarChart';
 import LineChart from '../components/LineChart';
 import Button from '../components/Button';
+import EmptyState from '../components/EmptyState';
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import useFirstLoad from '../hooks/useFirstLoad';
 import useApi from '../hooks/useApi';
@@ -43,6 +44,8 @@ const Dashboard = () => {
                 }
             } catch (err) {
                 if (err.status === 401) {
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('user');
                     navigate('/login');
                 }
                 console.error("Gagal memuat dashboard:", err);
@@ -59,6 +62,13 @@ const Dashboard = () => {
     if (error && !data) {
         return <div className="p-8 text-red-500 font-medium">Error: {error.message}</div>;
     }
+
+    // Cek apakah ada data untuk ditampilkan (pemasukan/pengeluaran > 0)
+    const hasActivity = data?.data && (
+        parseFloat(data.data.pemasukan_bulanan) > 0 || 
+        parseFloat(data.data.pengeluaran_bulanan) > 0 ||
+        (data.data.distribusi_kategori && data.data.distribusi_kategori.length > 0)
+    );
 
     return (
         <div className="flex flex-col h-full overflow-y-auto w-full">
@@ -81,22 +91,32 @@ const Dashboard = () => {
             {/* Konten Grid */}
             <div className="px-8 pb-10 flex flex-col gap-6 w-full">
 
-                {/* Kartu Ringkasan */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {summary.map((card) => (
-                        <SummaryCard
-                            key={card.title}
-                            title={card.title}
-                            amount={card.amount}
-                        />
-                    ))}
-                </div>
+                {!hasActivity ? (
+                    <EmptyState 
+                        title="Belum Ada Transaksi yang Dilakukan !"
+                        buttonText="Tambah Transaksi"
+                        onButtonClick={() => navigate('/transaksi')}
+                    />
+                ) : (
+                    <>
+                        {/* Kartu Ringkasan */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {summary.map((card) => (
+                                <SummaryCard
+                                    key={card.title}
+                                    title={card.title}
+                                    amount={card.amount}
+                                />
+                            ))}
+                        </div>
 
-                {/* Grafik */}
-                <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-                    <BarChart data={data?.data?.distribusi_kategori} />
-                    <LineChart trendData={data?.data?.grafik_waktu} todayData={data?.data?.transaksi_hari_ini} />
-                </div>
+                        {/* Grafik */}
+                        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+                            <BarChart data={data?.data?.distribusi_kategori} />
+                            <LineChart trendData={data?.data?.grafik_waktu} todayData={data?.data?.transaksi_hari_ini} />
+                        </div>
+                    </>
+                )}
 
             </div>
         </div>

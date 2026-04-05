@@ -1,4 +1,24 @@
 <?php
+require_once __DIR__ . '/../app/core/Env.php';
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
+$base_path = Env::get('API_BASE_PATH', '/proj-kelola-uang/api'); 
+
+// Normalisasi URI: Hapus subfolder/prefix API untuk pencocokan route
+if (str_starts_with($uri, $base_path)) {
+    $uri = substr($uri, strlen($base_path));
+} elseif (PHP_SAPI === 'cli-server' && str_starts_with($uri, '/api')) {
+    $uri = substr($uri, 4); // Hapus '/api'
+}
+
+// === DEBUGGER (Pindahkan ke paling atas agar tidak terhambat koneksi DB) ===
+if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
+    if (str_contains($_SERVER['REQUEST_URI'], 'debug_info') || !str_contains($uri, '/')) {
+        // Jika ada param debug atau jika endpoint kosong
+    }
+    // Sesuai permintaan: "api hanya menampilkan request-nya saja" (saat dev dan endpoint tidak ada)
+}
+
 require_once __DIR__ . '/../app/core/Response.php';
 require_once __DIR__ . '/../app/config/database.php';
 require_once __DIR__ . '/../app/controllers/OtentikasiController.php'; 
@@ -7,10 +27,6 @@ require_once __DIR__ . '/../app/controllers/DompetController.php';
 require_once __DIR__ . '/../app/controllers/TransaksiController.php'; 
 require_once __DIR__ . '/../app/controllers/HalamanController.php';
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$method = $_SERVER['REQUEST_METHOD'];
-$base_path = '/proj-kelola-uang/api'; 
-if (strpos($uri, $base_path) === 0) $uri = substr($uri, strlen($base_path));
 
 // Inisialisasi Controller Baru
 $otentikasi = new OtentikasiController();
@@ -54,4 +70,25 @@ if ($uri === '/target' && $method === 'DELETE') { $halaman->hapusTarget(); exit(
 if ($uri === '/laporan' && $method === 'GET') { $halaman->getLaporan(); exit(); }
 
 // Jika endpoint tidak ada
+if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
+    Response::json(200, "debug_info", [
+        "message" => "Uangmu API Debugger - Endpoint tidak ditemukan atau mode debug aktif.",
+        "request" => [
+            "uri_normalized" => $uri,
+            "uri_raw" => $_SERVER['REQUEST_URI'],
+            "method" => $method,
+            "query" => $_GET,
+            "body" => json_decode(file_get_contents('php://input'), true),
+            "headers" => getallheaders()
+        ],
+        "environment" => [
+            "app_env" => Env::get('APP_ENV'),
+            "php_sapi" => PHP_SAPI,
+            "api_base_config" => $base_path
+        ]
+    ]);
+    exit();
+}
+
+
 Response::json(404, "error", "Endpoint tidak ditemukan!");

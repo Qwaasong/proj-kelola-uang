@@ -1,71 +1,74 @@
-# Aplikasi Kelola Uang Pribadi
+# Laeva - Project Kelola Uang
 
-Aplikasi berbasis web untuk membantu pengelolaan keuangan pribadi (pemasukan, pengeluaran, dan saldo) dengan arsitektur decoupled: PHP sebagai backend API dan React sebagai frontend SPA.
+Aplikasi manajemen keuangan pribadi yang dibangun menggunakan React (Vite) untuk Frontend dan PHP Native untuk Backend.
 
-## Struktur Proyek
+## Persyaratan Sistem
 
-Berikut adalah gambaran umum struktur direktori aplikasi:
+- PHP 8.0 atau lebih baru
+- Node.js 16 atau lebih baru
+- MySQL / MariaDB
+- Server Apache (Opsional untuk development, disarankan untuk production)
 
-- **app/**: Inti logika aplikasi (Backend).
-  - config/: Konfigurasi basis data.
-  - controllers/: Logika bisnis dan validasi input.
-  - core/: Utilitas sistem inti.
-  - handlers/: Penghubung antara API dan logika controller.
-  - models/: Interaksi langsung dengan database (CRUD).
-- **database/**: Berisi file skema SQL (uangmu_app_db.sql).
-- **frontend/**: Aplikasi frontend berbasis React + TypeScript + Vite.
-- **public/**: Folder publik untuk entry point API.
-  - index.php: Entry point utama untuk request API.
-- **routes/**: Berisi api.php untuk mengatur endpoint API.
+## Persiapan Database
 
-## Cara Instalasi dan Menjalankan Aplikasi
-
-Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di komputer lokal Anda:
-
-### 1. Persiapan Basis Data
-
-1. Buka tool manajemen database Anda (seperti phpMyAdmin).
-2. Buat database baru dengan nama yang sesuai (misal: uangmu_app_db).
-3. Import file database/uangmu_app_db.sql ke dalam database tersebut.
-4. Sesuaikan konfigurasi database di app/config/ jika diperlukan.
-
-### 2. Menjalankan Backend (PHP)
-
-1. Pastikan server PHP Anda aktif (seperti XAMPP, Laragon, atau PHP built-in server).
-2. Arahkan root server Anda ke folder public/.
-3. Jika menggunakan PHP built-in server, jalankan perintah ini di root folder proyek:
-   php -S localhost:80 -t public
-4. Pastikan backend berjalan dan bisa diakses di http://localhost/api/user.
-
-### 3. Menjalankan Frontend (React)
-
-1. Buka terminal baru dan masuk ke direktori frontend:
-   cd frontend
-2. Install semua dependencies yang diperlukan:
-   npm install
-3. Jalankan development server untuk React:
-   npm run dev
-4. Buka browser dan akses URL yang muncul di terminal (biasanya http://localhost:5173).
-
-## Alur Kerja Pengembangan vs Produksi
-
-Sekarang aplikasi mendukung dua mode utama yang dapat diatur melalui file `.env`:
-
-### 1. Mode Pengembangan (Development)
-Gunakan mode ini saat Anda sedang aktif menulis kode:
-- **Set `.env`**: `APP_ENV=development`
-- **Jalankan Backend**: `php -S localhost:80 -t public`
-- **Jalankan Frontend**: `cd frontend && npm run dev`
-- **Akses**: Buka `http://localhost:5173` di browser. Vite akan meneruskan (proxy) request API ke backend secara otomatis.
-
-### 2. Mode Produksi (Production)
-Gunakan mode ini untuk simulasi deployment atau pengumpulan tugas akhir:
-- **Set `.env`**: `APP_ENV=production`
-- **Build**: Jalankan `npm run build` di folder `frontend/`.
-- **Jalankan Server**: Cukup jalankan PHP server `php -S localhost:80 -t public`.
-- **Akses**: Buka `http://localhost/` langsung. Backend PHP akan melayani file React yang sudah di-build dari folder `dist/`.
+1. Buat database baru di MySQL dengan nama `uangmu_app_db`.
+2. Impor file database yang terletak di folder `database/` (jika ada) atau sesuaikan konfigurasi tabel.
+3. Sesuaikan konfigurasi database di file `.env`.
 
 ---
 
-Link tutorial khusus produksi: [PRODUCTION_GUIDE.md](file:///d:/Dokumen%20Sekolah%2012/UKK/proj-kelola-uang/PRODUCTION_GUIDE.md)
+## Mode Pengembangan (Development)
 
+Mode ini digunakan saat Anda melakukan modifikasi kode atau menjalankan aplikasi secara lokal.
+
+### Langkah-langkah Menjalankan:
+
+1. Pastikan Anda berada di mode development dengan menjalankan perintah berikut di PowerShell (root project):
+   ```powershell
+   .\switch-mode.ps1 dev
+   ```
+
+2. Jalankan Backend (Pilih salah satu):
+   - Opsi A (PHP CLI): `php -S localhost:8000 -t public public/index.php`
+   - Opsi B (XAMPP): Pastikan Apache dan MySQL sudah menyala di XAMPP.
+
+3. Jalankan Frontend:
+   - Masuk ke folder frontend: `cd frontend`
+   - Jalankan dev server: `npm run dev`
+
+4. Akses aplikasi:
+   Buka browser dan buka alamat `http://localhost:5173`.
+
+---
+
+## Mode Produksi (Production)
+
+Mode ini digunakan saat aplikasi siap untuk diunggah ke hosting atau server asli.
+
+### Langkah-langkah Persiapan:
+
+1. Beralih ke mode production:
+   ```powershell
+   .\switch-mode.ps1 prod
+   ```
+
+2. Bangun (Build) Frontend:
+   - Masuk ke folder frontend: `cd frontend`
+   - Jalankan build: `npm run build`
+
+3. Pindahkan hasil build:
+   Salin semua isi folder `frontend/dist/` ke dalam folder `public/` di root project.
+
+4. Unggah ke Server:
+   Unggah seluruh isi folder root project (kecuali folder `frontend/`) ke direktori web server Anda (misal: `public_html` atau `/var/www/html`).
+
+---
+
+## Utilitas Script
+
+Tersedia script `switch-mode.ps1` untuk mempermudah perpindahan konfigurasi antara mode development dan production secara otomatis.
+
+Cara penggunaan:
+- `.\switch-mode.ps1 dev` : Mengaktifkan mode pengembangan.
+- `.\switch-mode.ps1 prod` : Mengaktifkan mode produksi.
+- `.\switch-mode.ps1 status` : Mengecek mode yang sedang aktif saat ini.
