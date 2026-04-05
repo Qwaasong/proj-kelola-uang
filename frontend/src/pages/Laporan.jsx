@@ -284,6 +284,81 @@ const Laporan = () => {
     const now = new Date();
     const [month, setMonth] = useState(now.getMonth() + 1);
     const [year, setYear] = useState(now.getFullYear());
+    const [isExporting, setIsExporting] = useState(false);
+
+    const getExportDates = () => {
+        const d = new Date();
+        let start, end;
+
+        switch (activePeriod) {
+            case 'Minggu Ini': {
+                const day = d.getDay() || 7;
+                const mon = new Date(d);
+                mon.setDate(d.getDate() - day + 1);
+                start = mon.toISOString().split('T')[0];
+                end = d.toISOString().split('T')[0];
+                break;
+            }
+            case 'Bulan Ini': {
+                start = `${year}-${String(month).padStart(2, '0')}-01`;
+                const lastDay = new Date(year, month, 0).getDate();
+                end = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+                break;
+            }
+            case '3 Bulan': {
+                const threeMoAgo = new Date(d);
+                threeMoAgo.setMonth(d.getMonth() - 2);
+                threeMoAgo.setDate(1);
+                start = threeMoAgo.toISOString().split('T')[0];
+                const lastDayOfNow = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+                end = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${lastDayOfNow}`;
+                break;
+            }
+            case 'Tahun Ini': {
+                start = `${year}-01-01`;
+                end = `${year}-12-31`;
+                break;
+            }
+            default:
+                start = `${year}-${String(month).padStart(2, '0')}-01`;
+                end = `${year}-${String(month).padStart(2, '0')}-31`;
+        }
+        return { start, end };
+    };
+
+    const handleExportPdf = async () => {
+        setIsExporting(true);
+        const { start, end } = getExportDates();
+        
+        try {
+            const token = localStorage.getItem('auth_token');
+            const response = await fetch(`/api/laporan/export-pdf?start_date=${start}&end_date=${end}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Gagal mengekspor PDF');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Laporan_Keuangan_${activePeriod.replace(' ', '_')}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        } catch (err) {
+            console.error(err);
+            alert("Error: " + err.message);
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
     const loadData = async () => {
         try {
@@ -347,11 +422,14 @@ const Laporan = () => {
 
                 {/* Tombol Export */}
                 <div className="flex items-center gap-3">
-                    <Button size="md" variant="primary" icon={<FilePdfIcon size={18} weight="bold" />}>
-                        Export PDF
-                    </Button>
-                    <Button size="md" variant="secondary" icon={<FileXlsIcon size={18} weight="bold" />}>
-                        Export Excel
+                    <Button 
+                        size="md" 
+                        variant="primary" 
+                        icon={<FilePdfIcon size={18} weight="bold" />}
+                        onClick={handleExportPdf}
+                        disabled={isExporting}
+                    >
+                        {isExporting ? 'Memproses...' : 'Export PDF'}
                     </Button>
                 </div>
             </div>
