@@ -58,7 +58,7 @@
             font-weight: bold; 
         }
 
-        /* 4. STYLING TABEL (Garis Horizontal Lebih Tegas) */
+        /* 4. STYLING TABEL */
         .clean-table { 
             width: 100%; 
             border-collapse: collapse; 
@@ -74,14 +74,14 @@
             font-weight: bold; 
             padding: 10px; 
             text-align: left; 
-            border-bottom: 2px solid #D1D5DB; /* Garis Header Lebih Tebal */
+            border-bottom: 2px solid #D1D5DB; 
         }
         
         .clean-table td { 
             padding: 12px 10px; 
             color: #374151; 
             font-weight: normal; 
-            border-bottom: 1px solid #D1D5DB; /* Garis Antar Baris Dipertebal (Gray 300) */
+            border-bottom: 1px solid #D1D5DB; 
             vertical-align: middle;
             white-space: nowrap; 
             overflow: hidden;
@@ -134,6 +134,27 @@
                 <td class="text-right">Rp <?= number_format($d['saldo'], 0, ',', '.') ?></td>
             </tr>
             <?php endforeach; ?>
+            <?php if(empty($dompetData)): ?>
+                <tr><td colspan="2" class="text-center text-secondary">Tidak ada data dompet.</td></tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+
+    <div class="section-title">Dana Darurat</div>
+    <table class="clean-table">
+        <thead>
+            <tr>
+                <th width="40%">Keterangan Alokasi</th>
+                <th width="30%" class="text-right">Terkumpul</th>
+                <th width="30%" class="text-right">Target Maksimal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Simpanan Dana Darurat</td>
+                <td class="text-right in">Rp <?= number_format($danaDarurat['jumlah_terkumpul'] ?? 0, 0, ',', '.') ?></td>
+                <td class="text-right text-secondary">Rp <?= number_format($danaDarurat['jumlah_target'] ?? 0, 0, ',', '.') ?></td>
+            </tr>
         </tbody>
     </table>
 
@@ -158,6 +179,9 @@
                 <td class="text-right"><?= number_format($persen, 0) ?>%</td>
             </tr>
             <?php endforeach; ?>
+            <?php if(empty($goalsData)): ?>
+                <tr><td colspan="4" class="text-center text-secondary">Belum ada target finansial.</td></tr>
+            <?php endif; ?>
         </tbody>
     </table>
 
@@ -188,6 +212,9 @@
                 <td class="text-right <?= $typeClass ?>">Rp <?= number_format($t['jumlah'], 0, ',', '.') ?></td>
             </tr>
             <?php endforeach; ?>
+            <?php if(empty($transaksiData)): ?>
+                <tr><td colspan="6" class="text-center text-secondary">Tidak ada transaksi pada periode ini.</td></tr>
+            <?php endif; ?>
         </tbody>
     </table>
 
