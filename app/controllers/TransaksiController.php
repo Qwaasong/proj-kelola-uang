@@ -55,6 +55,12 @@ class TransaksiController {
             $kategori_id = !empty($data->kategori_id) ? $data->kategori_id : null;
             $keterangan = !empty($data->keterangan) ? $data->keterangan : null;
             
+            // Validasi maksimal 60 kata untuk keterangan
+            if ($keterangan !== null && str_word_count($keterangan) > 60) {
+                Response::json(400, "error", "Keterangan tidak boleh lebih dari 60 kata!");
+                return; 
+            }
+
             $is_berulang = isset($data->is_berulang) ? $data->is_berulang : false;
             $selected_days = !empty($data->selected_days) ? $data->selected_days : null;
             $limit_date = !empty($data->limit_date) ? $data->limit_date : null;
@@ -80,6 +86,13 @@ class TransaksiController {
             $dompet_id = !empty($data->dompet_id) ? $data->dompet_id : null;
             $kategori_id = !empty($data->kategori_id) ? $data->kategori_id : null;
             $keterangan = !empty($data->keterangan) ? $data->keterangan : null;
+            
+            // Validasi maksimal 60 kata untuk keterangan
+            if ($keterangan !== null && str_word_count($keterangan) > 60) {
+                Response::json(400, "error", "Keterangan tidak boleh lebih dari 60 kata!");
+                return; 
+            }
+
             $is_berulang = isset($data->is_berulang) ? $data->is_berulang : false;
             $selected_days = !empty($data->selected_days) ? $data->selected_days : null;
             $limit_date = !empty($data->limit_date) ? $data->limit_date : null;
@@ -110,4 +123,4 @@ class TransaksiController {
             Response::json(400, "error", "ID transaksi wajib!");
         }
     }
-}
+}   
