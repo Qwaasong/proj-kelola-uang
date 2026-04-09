@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import api from '../utils/api';
+import { useGlobalLoading } from '../context/LoadingContext';
 
 // Global cache singleton (not exported)
 const globalApiCache = {};
@@ -9,6 +10,7 @@ const globalApiCache = {};
  * @returns {Array} - [execute, { data, loading, error }]
  */
 const useApi = () => {
+    const { startLoading, stopLoading } = useGlobalLoading();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -24,6 +26,7 @@ const useApi = () => {
         const isGet = method.toUpperCase() === 'GET';
         
         setLoading(true);
+        startLoading(); // Trigger progress bar global
         setError(null);
 
         // Instant Cache Hit (Stale-While-Revalidate)
@@ -59,8 +62,9 @@ const useApi = () => {
             throw err;
         } finally {
             setLoading(false);
+            stopLoading(); // Matikan progress bar global
         }
-    }, []);
+    }, [startLoading, stopLoading]);
 
     return [execute, { data, loading, error }];
 };

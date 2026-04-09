@@ -122,7 +122,7 @@ const Dompet = () => {
             setWalletBalance('');
             loadData();
         } catch (err) {
-            alert("Gagal menambah dompet: " + err.message);
+            toastr.error("Gagal menambah dompet: " + err.message);
         }
     };
 
@@ -147,7 +147,7 @@ const Dompet = () => {
             setEditingWallet(null);
             loadData();
         } catch (err) {
-            alert("Gagal memperbarui dompet: " + err.message);
+            toastr.error("Gagal memperbarui dompet: " + err.message);
         }
     };
 
@@ -163,7 +163,7 @@ const Dompet = () => {
             setTargetWalletId(null);
             loadData();
         } catch (err) {
-            alert("Transfer gagal: " + err.message);
+            toastr.error("Transfer gagal: " + err.message);
         }
     };
 
@@ -173,7 +173,7 @@ const Dompet = () => {
             await actionApi('DELETE', `/dompet?id=${id}`);
             loadData();
         } catch (err) {
-            alert("Gagal menghapus: " + err.message);
+            toastr.error("Gagal menghapus: " + err.message);
         }
     };
 

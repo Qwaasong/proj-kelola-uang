@@ -63,7 +63,7 @@ const DanaDarurat = () => {
             setIsTargetModalOpen(false);
             loadData();
         } catch (err) {
-            alert("Gagal update target: " + err.message);
+            toastr.error("Gagal update target: " + err.message);
         }
     };
 
@@ -81,7 +81,7 @@ const DanaDarurat = () => {
             setDescription('');
             loadData();
         } catch (err) {
-            alert("Gagal menambah dana: " + err.message);
+            toastr.error("Gagal menambah dana: " + err.message);
         }
     };
 

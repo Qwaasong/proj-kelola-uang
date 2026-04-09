@@ -24,6 +24,7 @@ import Select from '../components/Select';
 import EmptyState from '../components/EmptyState';
 import useFirstLoad from '../hooks/useFirstLoad';
 import useApi from '../hooks/useApi';
+import toastr from '../utils/toastr';
 import { useNavigate } from 'react-router-dom';
 
 // --- Data Dummy Transaksi ---
@@ -183,7 +184,7 @@ const Transaksi = () => {
             }
             loadData();
         } catch (err) {
-            alert("Gagal menyimpan transaksi: " + err.message);
+            toastr.error("Gagal menyimpan transaksi: " + err.message);
         }
     };
 
@@ -193,7 +194,7 @@ const Transaksi = () => {
             await actionApi('DELETE', `/transaksi?id=${id}`);
             loadData();
         } catch (err) {
-            alert("Gagal menghapus: " + err.message);
+            toastr.error("Gagal menghapus: " + err.message);
         }
     };
 
@@ -213,7 +214,7 @@ const Transaksi = () => {
 
     const handleDeleteBulk = () => {
         console.log('Delete selected:', selectedRows);
-        alert(`Menghapus ${selectedRows.length} transaksi terpilih`);
+        toastr.info(`Menghapus ${selectedRows.length} transaksi terpilih`);
         setSelectedRows([]);
         setIsBulkDropdownOpen(false);
     };

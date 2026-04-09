@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import ProgressBar from 'progressbar.js';
@@ -55,9 +56,9 @@ const Loading = ({ variant = 'spinner', ...props }) => {
     }
 
     if (variant === 'progressbar') {
-        return (
-            <div className="fixed top-0 left-0 w-full h-1 z-[9999]" ref={progressRef}>
-            </div>
+        return createPortal(
+            <div className="fixed top-0 left-0 w-full h-1 z-[9999]" ref={progressRef}></div>,
+            document.body
         );
     }
 

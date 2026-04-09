@@ -76,7 +76,7 @@ const Goal = () => {
             setDeadline('');
             loadData();
         } catch (err) {
-            alert("Gagal membuat goal: " + err.message);
+            toastr.error("Gagal membuat goal: " + err.message);
         }
     };
 
@@ -93,7 +93,7 @@ const Goal = () => {
             setWalletId(null);
             loadData();
         } catch (err) {
-            alert("Gagal menabung: " + err.message);
+            toastr.error("Gagal menabung: " + err.message);
         }
     };
 
@@ -103,7 +103,7 @@ const Goal = () => {
             await actionApi('DELETE', `/target?id=${id}`);
             loadData();
         } catch (err) {
-            alert("Gagal menghapus: " + err.message);
+            toastr.error("Gagal menghapus: " + err.message);
         }
     };
 

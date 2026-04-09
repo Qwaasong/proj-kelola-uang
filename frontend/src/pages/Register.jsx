@@ -5,6 +5,7 @@ import AuthHeader from '../components/AuthHeader';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import useApi from '../hooks/useApi';
+import toastr from '../utils/toastr';
 
 /**
  * Komponen Register untuk aplikasi Kelola Uang (Laeva)
@@ -27,7 +28,7 @@ const Register = () => {
         e.preventDefault();
         
         if (password !== confirmPassword) {
-            alert("Password dan Konfirmasi Password tidak cocok!");
+            toastr.error("Password dan Konfirmasi Password tidak cocok!");
             return;
         }
 
@@ -38,7 +39,7 @@ const Register = () => {
                 confirm_password: confirmPassword 
             });
             
-            alert("Registrasi berhasil! Silakan login.");
+            toastr.success("Registrasi berhasil! Silakan login.");
             navigate('/login');
         } catch (err) {
             console.error("Registrasi gagal:", err.message);

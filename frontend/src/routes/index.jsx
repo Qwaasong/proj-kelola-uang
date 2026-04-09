@@ -24,7 +24,7 @@ const GuestRoute = ({ children }) => {
 };
 
 /**
- * Wrapper untuk mendukung Lazy Loading dengan Suspense dan ProgressBar
+ * Wrapper untuk mendukung Lazy Loading dengan Suspense
  */
 const Loadable = (Component) => (props) => (
   <Suspense fallback={null}>
