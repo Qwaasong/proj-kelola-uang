@@ -2,10 +2,10 @@ import SummaryCard from '../components/SummaryCard';
 import Table from '../components/Table';
 import Button from '../components/Button';
 import { 
-    Stack as StackIcon, 
-    Wallet as WalletIcon, 
-    TrendUp as TrendUpIcon, 
-    Gear as GearIcon,
+    StackIcon, 
+    WalletIcon, 
+    TrendUpIcon, 
+    GearIcon,
 } from '@phosphor-icons/react';
 import useFirstLoad from '../hooks/useFirstLoad';
 import DanaDaruratSkeleton from '../components/DanaDaruratSkeleton';

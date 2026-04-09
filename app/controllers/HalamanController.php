@@ -20,10 +20,28 @@ class HalamanController {
     }
     public function setTargetDana() {
         $user = $this->otentikasi();
-        $data = json_decode(file_get_contents("php://input"));
-        if (!isset($data->jumlah_target)) Response::json(400, "error", "jumlah_target wajib diisi!");
-        (new DanaDaruratModel())->setTarget($user['id'], $data->jumlah_target);
-        Response::json(200, "success", "Target Dana Darurat diperbarui!");
+        $input = file_get_contents("php://input");
+        $data = json_decode($input);
+
+        // === DEBUG ===
+        error_log("=== SET TARGET DEBUG ===");
+        error_log("Raw Input: " . $input);
+        error_log("Decoded: " . print_r($data, true));
+        error_log("User ID: " . $user['id']);
+        // ==============
+
+        if (!isset($data->jumlah_target)) {
+            Response::json(400, "error", "jumlah_target wajib diisi!");
+        }
+
+        $model = new DanaDaruratModel();
+        $result = $model->setTarget($user['id'], $data->jumlah_target);
+
+        if ($result) {
+            Response::json(200, "success", "Target Dana Darurat diperbarui!");
+        } else {
+            Response::json(500, "error", "Gagal menyimpan target");
+        }
     }
     public function tambahSaldoDana() {
         $user = $this->otentikasi();

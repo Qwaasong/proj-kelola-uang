@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation,useNavigation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import TopHeader from './components/TopHeader';
-
+import Loading from './components/Loading';
 /**
  * Komponen App (Main Layout)
  * Mengelola state global untuk Sidebar agar tetap terbuka/tertutup saat navigasi.
  */
 const App = () => {
+    const navigation = useNavigation();
+    const isLoading = navigation.state === 'loading';
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const { pathname } = useLocation();
 
@@ -20,6 +22,14 @@ const App = () => {
 
     return (
         <div className="flex h-screen bg-[#F5F7F6] font-sans text-secondary antialiased overflow-hidden">
+
+
+            {
+                
+            /* Loading Indicator — Muncul saat navigasi antar halaman */
+            isLoading && <Loading variant="progressbar" />
+            
+            }
             
             {/* Sidebar Bersifat Persistent — tidak di-render ulang saat pindah halaman */}
             <Sidebar 

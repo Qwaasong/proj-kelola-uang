@@ -33,43 +33,71 @@ class DanaDaruratModel {
     }
 
     public function setTarget($user_id, $target) {
-        $cek = $this->get($user_id);
-        if ($cek) {
-            $stmt = $this->conn->prepare("UPDATE dana_darurat SET jumlah_target = :target WHERE user_id = :user_id");
-        } else {
-            $stmt = $this->conn->prepare("INSERT INTO dana_darurat (user_id, jumlah_target, jumlah_terkumpul) VALUES (:user_id, :target, 0)");
+        try {
+            $cek = $this->get($user_id);
+            
+            if ($cek) {
+                $stmt = $this->conn->prepare("UPDATE dana_darurat SET jumlah_target = :target WHERE user_id = :user_id");
+            } else {
+                $stmt = $this->conn->prepare("INSERT INTO dana_darurat (user_id, jumlah_target, jumlah_terkumpul) VALUES (:user_id, :target, 0)");
+            }
+
+            $success = $stmt->execute([':target' => $target, ':user_id' => $user_id]);
+
+            if ($success) {
+                return true;
+            }
+        } catch (PDOException $e) {
+            error_log("Gagal setTarget user_id=$user_id | Error: " . $e->getMessage());
+            return false;
         }
-        return $stmt->execute([':target' => $target, ':user_id' => $user_id]);
+
+        return false;
+
     }
 
     public function addDana($user_id, $dompet_id, $jumlah) {
         try {
             $this->conn->beginTransaction();
             
-            // 1. Cek saldo dompet
+            // 1. Cek saldo & Lock baris
             $stmtCek = $this->conn->prepare("SELECT saldo FROM dompet WHERE id = :id AND user_id = :uid FOR UPDATE");
             $stmtCek->execute([':id' => $dompet_id, ':uid' => $user_id]);
             $dompet = $stmtCek->fetch();
-            if (!$dompet || $dompet['saldo'] < $jumlah) throw new Exception("Saldo dompet tidak cukup.");
+
+            if (!$dompet) throw new Exception("Dompet tidak ditemukan.");
+            if ($dompet['saldo'] < $jumlah) throw new Exception("Saldo dompet tidak cukup.");
 
             // 2. Kurangi saldo dompet
-            $stmtDompet = $this->conn->prepare("UPDATE dompet SET saldo = saldo - :jumlah WHERE id = :id");
-            $stmtDompet->execute([':jumlah' => $jumlah, ':id' => $dompet_id]);
+            $stmtDompet = $this->conn->prepare("UPDATE dompet SET saldo = saldo - :jumlah WHERE id = :id AND user_id = :uid");
+            $stmtDompet->execute([':jumlah' => $jumlah, ':id' => $dompet_id, ':uid' => $user_id]);
 
-            // 3. Tambah ke Dana Darurat
+            // 3. Tambah ke Dana Darurat & Cek apakah barisnya ada
             $stmtDana = $this->conn->prepare("UPDATE dana_darurat SET jumlah_terkumpul = jumlah_terkumpul + :jumlah WHERE user_id = :uid");
             $stmtDana->execute([':jumlah' => $jumlah, ':uid' => $user_id]);
+            
+            if ($stmtDana->rowCount() === 0) {
+                
+                throw new Exception("Data Dana Darurat belum diatur. Silakan set target dulu.");
+            }
 
-            // 4. Catat di Riwayat Transaksi (sebagai Tabungan)
+            // 4. Catat Transaksi
             $stmtLog = $this->conn->prepare("INSERT INTO transaksi (user_id, dompet_id, keterangan, jenis, tipe, jumlah, tanggal) 
-                                             VALUES (:uid, :did, 'Alokasi Dana Darurat', 'Tabungan', 'BARU', :jumlah, CURRENT_DATE())");
+                                            VALUES (:uid, :did, 'Alokasi Dana Darurat', 'Tabungan', 'BARU', :jumlah, CURRENT_DATE())");
             $stmtLog->execute([':uid' => $user_id, ':did' => $dompet_id, ':jumlah' => $jumlah]);
 
             $this->conn->commit();
             return true;
+
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) $this->conn->rollBack();
+            error_log("DB Error addDana: " . $e->getMessage());
+            return false; // Kembalikan false agar konsisten boolean
         } catch (Exception $e) {
-            $this->conn->rollBack();
-            return $e->getMessage();
+            if ($this->conn->inTransaction()) $this->conn->rollBack();
+            error_log("Logic Error addDana: " . $e->getMessage());
+            return $e->getMessage(); // Khusus error manual, boleh kirim pesan string
         }
     }
+
 }
