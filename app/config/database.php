@@ -13,21 +13,11 @@ class Database {
         $username = getenv('DB_USER');
         $password = getenv('DB_PASS');
 
-        try {
-            $this->conn = new PDO("mysql:host=" . $host . ";dbname=" . $db_name, $username, $password);
-            // Mode error exception agar mudah di-debug
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            // Default fetch data sebagai array asosiatif
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        } catch(PDOException $exception) {
-            header('Content-Type: application/json');
-            $isDebug = Env::get('APP_DEBUG', 'false') === 'true';
-            $message = $isDebug 
-                ? "Connection error: " . $exception->getMessage() 
-                : "Terjadi kesalahan pada server. Silakan coba lagi nanti.";
-            echo json_encode(["status" => "error", "message" => $message]);
-            exit;
-        }
+        $this->conn = new PDO("mysql:host={$host};dbname={$db_name}", $username, $password);
+        // Mode error exception agar mudah di-debug
+        $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Default fetch data sebagai array asosiatif
+        $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
 
     // Metode ini yang akan dipakai di seluruh aplikasi untuk ambil 1 koneksi yang sama

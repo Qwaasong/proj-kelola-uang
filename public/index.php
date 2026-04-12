@@ -1,14 +1,81 @@
 <?php
+
+require_once __DIR__ . '/../app/core/Env.php';
+\Env::load();
+
 /**
  * Unified Entry Point
  * Menangani request API dan melayani Frontend React (SPA).
  */
 
-require_once __DIR__ . '/../app/core/Env.php';
-Env::load();
+// 1. Konfigurasi Error Reporting berdasarkan APP_DEBUG
+if (\Env::get('APP_DEBUG') === 'true') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
+
+// 2. Logging Request untuk development (Console/Server Log)
+$method = $_SERVER['REQUEST_METHOD'] ?? 'CLI';
+$uri = $_SERVER['REQUEST_URI'] ?? '/';
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown Agent';
+$requestLog = sprintf("[%s] %s %s | UA: %s", date('Y-m-d H:i:s'), $method, $uri, $userAgent);
+
+// Logging payload khusus POST & PUT
+if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
+    $body = file_get_contents('php://input');
+    if (!empty($body)) {
+        $decodedBody = json_decode($body, true);
+        $displayBody = $decodedBody ? json_encode($decodedBody) : substr(str_replace(["\n", "\r"], " ", $body), 0, 100);
+        $requestLog .= " | Payload: " . $displayBody;
+    } else {
+        $requestLog .= " | Payload: [Empty]";
+    }
+}
+
+// Redirect error_log ke stderr secara runtime agar muncul di terminal php -S
+// Gunakan @ untuk meredam error jika penulisan ke stream gagal (agar tidak merusak JSON)
+@ini_set('error_log', 'php://stderr');
+@error_log($requestLog);
+@file_put_contents(__DIR__ . '/request_debug.log', $requestLog . PHP_EOL, FILE_APPEND);
+
+// 3. Global Exception Handler (Mengembalikan JSON informatif)
+set_exception_handler(function($e) {
+    if (ob_get_length()) ob_clean(); // Bersihkan output buffer jika ada
+    
+    $isDebug = \Env::get('APP_DEBUG') === 'true';
+    require_once __DIR__ . '/../app/core/Response.php';
+    
+    $errorDetails = [
+        'type' => get_class($e),
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ];
+
+    if ($isDebug) {
+        $errorDetails['trace'] = array_slice($e->getTrace(), 0, 10); // Ambil 10 trace teratas
+        Response::json(500, "Internal Server Error (Debug Mode)", $errorDetails);
+    } else {
+        Response::json(500, "error", [
+            'message' => "Terjadi kesalahan internal pada server.",
+            'details' => $errorDetails // Tetap kirim info dasar tapi mungkin bisa disembunyikan di prod jika perlu
+        ]);
+    }
+});
+
+// 4. Custom Error Handler (Konversi error ke Exception agar sinkron dengan API)
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    if (!(error_reporting() & $errno)) return false;
+    
+    // Konversi error ke Exception agar ditangkap oleh Global Exception Handler
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+});
 
 // Konfigurasi CORS - Lebih ketat di production
-$allowed_origin = Env::get('ALLOWED_ORIGIN', '*');
+$allowed_origin = \Env::get('ALLOWED_ORIGIN', '*');
 header("Access-Control-Allow-Origin: $allowed_origin");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -20,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$api_base = Env::get('API_BASE_PATH', '/proj-kelola-uang/api');
+$api_base = \Env::get('API_BASE_PATH', '/proj-kelola-uang/api');
 
 // 1. Jika request mengarah ke API
 // Kita cek apakah URI dimulai dengan api_base 
@@ -73,7 +140,7 @@ if (file_exists($dist_index)) {
 
 // 4. Tambahan: Development Helper
 // Jika di mode development dan file tidak ditemukan, berikan info yang jelas
-if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
+if (\Env::get('APP_ENV') === 'development' || \Env::get('APP_DEBUG') === 'true') {
     http_response_code(200);
     echo "<div style='font-family: sans-serif; padding: 40px; line-height: 1.6; max-width: 600px; margin: 0 auto; color: #333;'>";
     echo "<h1 style='color: #408A71;'>Uangmu - Aluran Backend</h1>";
@@ -95,4 +162,4 @@ if (Env::get('APP_ENV') === 'development' || Env::get('APP_DEBUG') === 'true') {
 
 // Jika semua gagal
 http_response_code(404);
-echo "404 - Halaman tidak ditemukan atau aplikasi belum di-build.";
+echo "404 - Halaman tidak ditemukan atau aplikasi belum di-build.";

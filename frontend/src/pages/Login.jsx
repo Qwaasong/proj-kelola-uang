@@ -5,14 +5,13 @@ import AuthHeader from '../components/AuthHeader';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import useApi from '../hooks/useApi';
+import toastr from '../utils/toastr';
+import Loading from '../components/Loading';
 
-/**
- * Komponen Login untuk aplikasi Kelola Uang (Laeva)
- * Menggunakan standar React Functional Component dengan Tailwind CSS
- */
 const Login = () => {
     const navigate = useNavigate();
-    const [login, { loading, error }] = useApi();
+    const [login, {loading}] = useApi();
+    const [errors, setErrors] = useState({ username: '', password: '', general: '' });
 
     // State untuk menangkap input user
     const [username, setUsername] = useState('');
@@ -23,36 +22,97 @@ const Login = () => {
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
+        // Reset errors sebelum submit
+        setErrors({ username: '', password: '', general: '' });
+
         try {
             const response = await login('POST', '/otentikasi/masuk', { username, password });
 
-            
             if (response.data && response.data.token) {
                 localStorage.setItem('auth_token', response.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
             }
 
-            // Redirect ke dashboard
+            toastr.success("Berhasil masuk!");
             navigate('/dashboard');
+            
         } catch (err) {
-            // Error ditangani oleh useApi (state error)
-            console.error("Login gagal:", err.message);
+            // Ambil data response dari error
+            const responseData = err.data?.data;
+            
+            // Jika response adalah string (error umum)
+            if (typeof responseData === 'string') {
+                const errorMessage = responseData;
+                setErrors(prev => ({ ...prev, general: errorMessage }));
+                return;
+            }
+            
+            // Jika response adalah object (error terstruktur)
+            if (typeof responseData === 'object' && responseData !== null) {
+                const errorMessage = responseData.message || err.message;
+                
+                // Cek error single field
+                if (responseData.field) {
+                    const field = responseData.field;
+                    if (field === 'username') {
+                        setErrors(prev => ({ ...prev, username: errorMessage, password: '', general: '' }));
+                    } else if (field === 'password') {
+                        setErrors(prev => ({ ...prev, password: errorMessage, username: '', general: '' }));
+                    }
+                }
+                // Cek error multiple fields (field tidak lengkap)
+                else if (responseData.fields && Array.isArray(responseData.fields)) {
+                    const fields = responseData.fields;
+                    const newErrors = { username: '', password: '' };
+                    
+                    fields.forEach(field => {
+                        if (field === 'username') {
+                            newErrors.username = errorMessage;
+                        } else if (field === 'password') {
+                            newErrors.password = errorMessage;
+                        }
+                    });
+                    
+                    setErrors(prev => ({ ...prev, ...newErrors, general: '' }));
+                }
+                // Error umum dalam bentuk object
+                else {
+                    setErrors(prev => ({ ...prev, general: errorMessage, username: '', password: '' }));
+                }
+            } 
+            // Jika response tidak dikenal
+            else {
+                const errorMessage = err.message || "Terjadi kesalahan saat login";
+                toastr.error(errorMessage);
+                setErrors(prev => ({ ...prev, general: errorMessage }));
+            }
         }
+    };
+
+    // Reset error saat user mengetik
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value);
+        setErrors(prev => ({ ...prev, username: '', general: '' }));
+    };
+
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+        setErrors(prev => ({ ...prev, password: '', general: '' }));
     };
 
     return (
         <div className="min-h-screen flex flex-col lg:flex-row bg-white text-secondary font-sans antialiased">
-            
+
             {/* Kolom Kiri (Bagian Form) */}
             <div className="w-full lg:w-[45%] p-6 lg:p-6 flex flex-col min-h-screen">
-                
+
                 {/* Header / Logo */}
                 <AuthHeader />
 
                 {/* Kontainer Form (Di-center vertikal) */}
                 <div className="flex-grow flex flex-col justify-center w-full max-w-[380px] mx-auto">
-                    
+
                     {/* Judul */}
                     <h1 className="text-[32px] font-semibold mb-1">Login</h1>
                     <p className="text-[14px] mb-8 font-medium">
@@ -61,37 +121,47 @@ const Login = () => {
 
                     {/* Form Input */}
                     <form className="space-y-5" onSubmit={handleSubmit}>
-                        <Input 
+                        <Input
                             label="Username"
                             name="username"
-                            type="text" 
-                            placeholder="Masukkan Username" 
+                            type="text"
+                            placeholder="Masukkan Username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={handleUsernameChange}
+                            error={errors.username}
                             size="lg"
                             autoComplete="username"
-                            required
-                        />
-                        
-                        <Input 
-                            label="Password"
-                            name="password"
-                            type="password" 
-                            placeholder="Masukkan Password" 
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            size="lg"
-                            autoComplete="current-password"
-                            required
                         />
 
-                        <Button 
-                            type="submit" 
+                        <Input
+                            label="Password"
+                            name="password"
+                            type="password"
+                            placeholder="Masukkan Password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            error={errors.password}
+                            size="lg"
+                            autoComplete="current-password"
+                        />
+
+
+
+                        <Button
+                            type="submit"
                             size="lg"
                             isFullWidth
                             className="mt-4"
+                            disabled={loading}
                         >
-                            Login
+                            {loading ? (
+                                <div className="flex items-center gap-2">
+                                    <Loading variant="spinner" />
+                                    <span>Memvalidasi...</span>
+                                </div>
+                            ) : (
+                                'Login'
+                            )}
                         </Button>
                     </form>
 
@@ -105,11 +175,11 @@ const Login = () => {
 
             {/* Kolom Kanan (Bagian Ilustrasi) */}
             <div className="hidden lg:flex w-[55%] items-center justify-center p-8 relative overflow-hidden bg-white border-l border-gray-100">
-                
+
                 {/* Ilustrasi SVG */}
-                <img 
-                    src={IlustrasiLoginImg} 
-                    alt="Ilustrasi Login" 
+                <img
+                    src={IlustrasiLoginImg}
+                    alt="Ilustrasi Login"
                     fetchPriority='high'
                     className="w-full max-w-[500px] h-auto object-contain z-10"
                 />

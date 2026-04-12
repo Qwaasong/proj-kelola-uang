@@ -5,15 +5,12 @@ import AuthHeader from '../components/AuthHeader';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import useApi from '../hooks/useApi';
-import toastr from '../utils/toastr';
+import Loading from '../components/Loading';
 
-/**
- * Komponen Register untuk aplikasi Kelola Uang (Laeva)
- * Menggunakan standar React Functional Component dengan Tailwind CSS
- */
 const Register = () => {
     const navigate = useNavigate();
-    const [register, { loading, error }] = useApi();
+    const [register, { loading}] = useApi();
+    const [errors, setErrors] = useState({ username: '', password: '', confirmPassword: '', general: '' });
 
     // State untuk menangkap input user
     const [username, setUsername] = useState('');
@@ -26,11 +23,9 @@ const Register = () => {
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (password !== confirmPassword) {
-            toastr.error("Password dan Konfirmasi Password tidak cocok!");
-            return;
-        }
+
+        // Reset errors sebelum submit
+        setErrors({ username: '', password: '', confirmPassword: '', general: '' });
 
         try {
             await register('POST', '/otentikasi/daftar', { 
@@ -39,11 +34,78 @@ const Register = () => {
                 confirm_password: confirmPassword 
             });
             
-            toastr.success("Registrasi berhasil! Silakan login.");
+            // Langsung redirect tanpa toastr
             navigate('/login');
         } catch (err) {
-            console.error("Registrasi gagal:", err.message);
+            // Ambil data response dari error
+            const responseData = err.data?.data;
+            
+            // Jika response adalah string (error umum)
+            if (typeof responseData === 'string') {
+                const errorMessage = responseData;
+                setErrors(prev => ({ ...prev, general: errorMessage }));
+                return;
+            }
+            
+            // Jika response adalah object (error terstruktur)
+            if (typeof responseData === 'object' && responseData !== null) {
+                const errorMessage = responseData.message || err.message;
+                
+                // Cek error single field
+                if (responseData.field) {
+                    const field = responseData.field;
+                    if (field === 'username') {
+                        setErrors(prev => ({ ...prev, username: errorMessage, general: '' }));
+                    } else if (field === 'password') {
+                        setErrors(prev => ({ ...prev, password: errorMessage, general: '' }));
+                    } else if (field === 'confirm_password') {
+                        setErrors(prev => ({ ...prev, confirmPassword: errorMessage, general: '' }));
+                    }
+                }
+                // Cek error multiple fields
+                else if (responseData.fields && Array.isArray(responseData.fields)) {
+                    const fields = responseData.fields;
+                    const newErrors = {};
+                    
+                    fields.forEach(field => {
+                        if (field === 'username') {
+                            newErrors.username = errorMessage;
+                        } else if (field === 'password') {
+                            newErrors.password = errorMessage;
+                        } else if (field === 'confirm_password') {
+                            newErrors.confirmPassword = errorMessage;
+                        }
+                    });
+                    
+                    setErrors(prev => ({ ...prev, ...newErrors, general: '' }));
+                }
+                // Error umum dalam bentuk object
+                else {
+                    setErrors(prev => ({ ...prev, general: errorMessage }));
+                }
+            } 
+            // Jika response tidak dikenal
+            else {
+                const errorMessage = err.message || "Terjadi kesalahan saat registrasi";
+                setErrors(prev => ({ ...prev, general: errorMessage }));
+            }
         }
+    };
+
+    // Reset error saat user mengetik (opsional)
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value);
+        setErrors(prev => ({ ...prev, username: '', general: '' }));
+    };
+
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+        setErrors(prev => ({ ...prev, password: '', general: '' }));
+    };
+
+    const handleConfirmPasswordChange = (e) => {
+        setConfirmPassword(e.target.value);
+        setErrors(prev => ({ ...prev, confirmPassword: '', general: '' }));
     };
 
     return (
@@ -71,10 +133,10 @@ const Register = () => {
                             type="text" 
                             placeholder="Masukkan Username" 
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={handleUsernameChange}
+                            error={errors.username}
                             size="lg"
                             autoComplete="username"
-                            required
                         />
                         
                         <Input 
@@ -83,10 +145,10 @@ const Register = () => {
                             type="password" 
                             placeholder="Masukkan Password" 
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={handlePasswordChange}
+                            error={errors.password}
                             size="lg"
                             autoComplete="new-password"
-                            required
                         />
 
                         <Input 
@@ -95,10 +157,10 @@ const Register = () => {
                             type="password" 
                             placeholder="Konfirmasi Password" 
                             value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onChange={handleConfirmPasswordChange}
+                            error={errors.confirmPassword}
                             size="lg"
                             autoComplete="new-password"
-                            required
                         />
 
                         <Button 
@@ -108,16 +170,18 @@ const Register = () => {
                             className="mt-4"
                             disabled={loading}
                         >
-                            {loading ? 'Registering...' : 'Register'}
+                            {loading ? (
+                                <div className="flex items-center gap-2">
+                                    <Loading variant="spinner" />
+                                    <span>Memvalidasi...</span>
+                                </div>
+                            ) : (
+                                'Login'
+                            )}
                         </Button>
                     </form>
 
-                    {/* Menampilkan pesan error jika ada */}
-                    {error && (
-                        <p className="text-red-500 text-sm mt-4 text-center font-medium">
-                            {error.message}
-                        </p>
-                    )}
+
 
                     {/* Teks Footer */}
                     <p className="text-center text-[12px] mt-8 font-medium px-4">

@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
     const navigate = useNavigate();
     const isFirstLoad = useFirstLoad('dashboard', 250);
-    const [fetchDashboard, { data, loading, error }] = useApi();
+    const [fetchDashboard, { data, error }] = useApi();
     const [summary, setSummary] = useState([
         { title: 'Pemasukan', amount: '0' },
         { title: 'Pengeluaran', amount: '0' },
@@ -24,7 +24,7 @@ const Dashboard = () => {
         { title: 'Total Saldo', amount: '0' },
     ]);
 
-    // Format number to IDR string
+    // Format Ke Rupiah 
     const formatIDR = (num) => {
         return new Intl.NumberFormat('id-ID').format(num || 0);
     };

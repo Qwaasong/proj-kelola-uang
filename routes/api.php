@@ -33,6 +33,17 @@ $dompet     = new DompetController();
 $transaksi  = new TransaksiController(); 
 $halaman    = new HalamanController();
 
+// === STATUS ===
+if ($uri === '/status' && $method === 'GET') {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'online',
+        'pesan' => 'Server berjalan dengan baik',
+        'waktu'  => date('Y-m-d H:i:s')
+    ]);
+    exit();
+}
+
 // === OTENTIKASI ===
 if ($uri === '/otentikasi/masuk' && $method === 'POST') { $otentikasi->masuk(); exit(); }
 if ($uri === '/otentikasi/daftar' && $method === 'POST') { $otentikasi->daftar(); exit(); }

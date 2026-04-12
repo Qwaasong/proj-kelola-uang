@@ -1,10 +1,8 @@
 import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import Loading from '../components/Loading';
 import App from '../App';
 
 // Lazy loading komponen halaman
-const Home = lazy(() => import('../pages/Home'));
 const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));

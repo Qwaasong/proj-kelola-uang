@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
+import { preload } from 'react-dom';
 import { Outlet, useLocation, useNavigation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import TopHeader from './components/TopHeader';
 import Loading from './components/Loading';
 import { useGlobalLoading } from './context/LoadingContext';
+import EmptyIllustration from './assets/EmptyState.png';
+import EmptyState from './components/EmptyState';
+
+preload(EmptyIllustration, { as: 'image' });
 
 /**
  * Komponen App (Main Layout)
@@ -16,7 +21,7 @@ const App = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const { pathname } = useLocation();
 
-    // Scroll to Top & Reset UI on Navigation
+    // Scroll to Top on Navigation
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [pathname]);
