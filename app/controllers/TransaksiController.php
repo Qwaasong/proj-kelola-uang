@@ -111,16 +111,28 @@ class TransaksiController {
 
     public function hapus() {
         $user = $this->otentikasi();
-        $id = isset($_GET['id']) ? $_GET['id'] : null;
+        
+        $data = json_decode(file_get_contents("php://input"));
+        $ids = [];
 
-        if ($id) {
-            if ($this->transaksiModel->deleteTransaksi($id, $user['id'])) {
+        // Deteksi input ID: dari JSON Body atau dari Query String
+        if (isset($data->ids) && is_array($data->ids)) {
+            $ids = $data->ids;
+        } elseif (isset($_GET['id'])) {
+            $ids = explode(',', $_GET['id']); // mendukung ?id=1,2,3
+        }
+
+        if (!empty($ids)) {
+            // Filter nilai kosong dan validasi menjadi integer, lalu hilangkan duplikat
+            $ids = array_unique(array_filter(array_map('intval', $ids)));
+
+            if ($this->transaksiModel->deleteMultipleTransaksi($ids, $user['id'])) {
                 Response::json(200, "success", "Transaksi berhasil dihapus!");
             } else {
                 Response::json(500, "error", "Gagal menghapus transaksi.");
             }
         } else {
-            Response::json(400, "error", "ID transaksi wajib!");
+            Response::json(400, "error", "ID transaksi wajib diberikan!");
         }
     }
-}   
+}
