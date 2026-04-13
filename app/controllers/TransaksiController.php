@@ -32,8 +32,17 @@ class TransaksiController {
         $search = isset($_GET['search']) ? $_GET['search'] : '';
         $offset = ($page - 1) * $limit;
 
-        $data = $this->transaksiModel->getPaginated($user['id'], $search, $limit, $offset);
-        $total_data = $this->transaksiModel->countTotal($user['id'], $search);
+        // Extract Filters & Sort
+        $filters = [
+            'kategori_id' => isset($_GET['kategori_id']) && $_GET['kategori_id'] !== '' ? (int)$_GET['kategori_id'] : null,
+            'dompet_id'   => isset($_GET['dompet_id']) && $_GET['dompet_id'] !== '' ? (int)$_GET['dompet_id'] : null,
+            'jenis'       => isset($_GET['jenis']) && $_GET['jenis'] !== '' ? $_GET['jenis'] : null,
+            'sort_by'     => isset($_GET['sort_by']) ? $_GET['sort_by'] : 'tanggal',
+            'order'       => isset($_GET['order']) ? $_GET['order'] : 'DESC'
+        ];
+
+        $data = $this->transaksiModel->getPaginated($user['id'], $search, $limit, $offset, $filters);
+        $total_data = $this->transaksiModel->countTotal($user['id'], $search, $filters);
 
         Response::json(200, "success", [
             "data" => $data,

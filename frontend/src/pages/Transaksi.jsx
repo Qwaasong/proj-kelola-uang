@@ -1,19 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { 
-    ArrowsLeftRight as ArrowsLeftRightIcon,
-    Funnel as FunnelIcon, 
-    MagnifyingGlass as MagnifyingGlassIcon, 
-    CaretDown as CaretDownIcon, 
-    CaretLeft as CaretLeftIcon, 
-    CaretRight as CaretRightIcon,
-    Trash as TrashIcon,
-    PencilSimple as PencilSimpleIcon,
-    TrendUp as TrendUpIcon,
-    TrendDown as TrendDownIcon,
-    Repeat as RepeatIcon,
-    Calendar as CalendarIcon,
-    ClockClockwise as ClockClockwiseIcon,
-    Wallet as WalletIcon
+    ArrowsLeftRightIcon,
+    FunnelIcon, 
+    MagnifyingGlassIcon, 
+    CaretDownIcon, 
+    CaretLeftIcon, 
+    CaretRightIcon,
+    TrashIcon,
+    PencilSimpleIcon,
+    TrendUpIcon,
+    TrendDownIcon,
+    RepeatIcon,
+    CalendarIcon,
+    ClockClockwiseIcon,
+    WalletIcon
 } from '@phosphor-icons/react';
 import TransaksiSkeleton from '../components/TransaksiSkeleton';
 import Table from '../components/Table';
@@ -60,6 +60,15 @@ const Transaksi = () => {
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const [limit] = useState(10);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const filterRef = useRef(null);
+
+    // Filter States
+    const [filterJenis, setFilterJenis] = useState('');
+    const [filterKategori, setFilterKategori] = useState('');
+    const [filterDompet, setFilterDompet] = useState('');
+    const [sortBy, setSortBy] = useState('tanggal');
+    const [order, setOrder] = useState('DESC');
 
     // Debounce Search Logic
     useEffect(() => {
@@ -90,7 +99,21 @@ const Transaksi = () => {
 
     const loadData = async () => {
         try {
-            await fetchTransactions('GET', `/transaksi?page=${page}&limit=${limit}&search=${search}`);
+            const params = {
+                page,
+                limit,
+                search,
+                jenis: filterJenis,
+                kategori_id: filterKategori,
+                dompet_id: filterDompet,
+                sort_by: sortBy,
+                order
+            };
+            const queryStrings = new URLSearchParams(Object.fromEntries(
+                Object.entries(params).filter(([_, v]) => v !== '' && v !== null)
+            )).toString();
+
+            await fetchTransactions('GET', `/transaksi?${queryStrings}`);
             if (!catData) await fetchCats('GET', '/kategori');
             if (!walletData) await fetchWallets('GET', '/dompet');
         } catch (err) {
@@ -100,7 +123,17 @@ const Transaksi = () => {
 
     useEffect(() => {
         loadData();
-    }, [fetchTransactions, page, search, navigate]);
+    }, [page, search, filterJenis, filterKategori, filterDompet, sortBy, order]);
+
+    // Close popovers on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (bulkRef.current && !bulkRef.current.contains(event.target)) setIsBulkDropdownOpen(false);
+            if (filterRef.current && !filterRef.current.contains(event.target)) setIsFilterOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Format options for Select (using Icons from props if they exist in categoryOptions)
     const categories = (catData?.data || []).map(c => ({ 
@@ -212,11 +245,20 @@ const Transaksi = () => {
         );
     };
 
-    const handleDeleteBulk = () => {
-        console.log('Delete selected:', selectedRows);
-        toastr.info(`Menghapus ${selectedRows.length} transaksi terpilih`);
-        setSelectedRows([]);
-        setIsBulkDropdownOpen(false);
+    const handleDeleteBulk = async () => {
+        if (!selectedRows.length) return;
+        if (!confirm(`Hapus ${selectedRows.length} transaksi terpilih? Saldo dompet akan disesuaikan otomatis.`)) return;
+
+        try {
+            const idParams = selectedRows.join(',');
+            await actionApi('DELETE', `/transaksi?id=${idParams}`);
+            toastr.success(`${selectedRows.length} transaksi berhasil dihapus`);
+            setSelectedRows([]);
+            setIsBulkDropdownOpen(false);
+            loadData();
+        } catch (err) {
+            toastr.error("Gagal menghapus masal: " + err.message);
+        }
     };
 
     const transactions = txData?.data?.data || [];
@@ -291,14 +333,102 @@ const Transaksi = () => {
                     <div className="flex justify-between items-center px-5 py-3 border-b border-gray-200 flex-wrap gap-4 bg-white">
                         
                         <div className="flex items-center gap-3">
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                className="h-9 gap-2 text-[13px] font-medium"
-                            >
-                                <span>Filter</span>
-                                <FunnelIcon size={13} weight="bold" />
-                            </Button>
+                            <div className="relative" ref={filterRef}>
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    className={`h-9 gap-2 text-[13px] font-medium transition-all ${isFilterOpen ? 'ring-2 ring-primary/20 bg-gray-50' : ''}`}
+                                >
+                                    <span>Filter</span>
+                                    <FunnelIcon size={13} weight="bold"/>
+                                </Button>
+
+                                {isFilterOpen && (
+                                    <div className="absolute top-11 left-0 w-[280px] bg-white rounded-xl shadow-xl ring-1 ring-gray-950/5 p-4 z-30 animate-[fadeIn_0.15s_ease-out]">
+                                        <div className="flex flex-col gap-4">
+                                            <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                                                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Filter & Sort</span>
+                                                <button 
+                                                    onClick={() => {
+                                                        setFilterJenis('');
+                                                        setFilterKategori('');
+                                                        setFilterDompet('');
+                                                        setSortBy('tanggal');
+                                                        setOrder('DESC');
+                                                    }}
+                                                    className="text-[11px] text-primary font-bold hover:underline"
+                                                >
+                                                    Reset
+                                                </button>
+                                            </div>
+
+                                            {/* Sorting */}
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[11px] font-bold text-gray-400 uppercase">Urutkan Nominal</label>
+                                                <div className="flex gap-2">
+                                                    <button 
+                                                        onClick={() => { setSortBy('jumlah'); setOrder('DESC'); }}
+                                                        className={`flex-1 py-1.5 px-2 rounded-lg text-[12px] font-medium border transition-all ${sortBy === 'jumlah' && order === 'DESC' ? 'bg-primary/10 border-primary text-primary' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                                                    >
+                                                        Terbesar
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => { setSortBy('jumlah'); setOrder('ASC'); }}
+                                                        className={`flex-1 py-1.5 px-2 rounded-lg text-[12px] font-medium border transition-all ${sortBy === 'jumlah' && order === 'ASC' ? 'bg-primary/10 border-primary text-primary' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                                                    >
+                                                        Terkecil
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Jenis */}
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[11px] font-bold text-gray-400 uppercase">Jenis</label>
+                                                <select 
+                                                    value={filterJenis} 
+                                                    onChange={(e) => setFilterJenis(e.target.value)}
+                                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer hover:border-gray-300 transition-colors"
+                                                >
+                                                    <option value="">Semua Jenis</option>
+                                                    <option value="Pemasukan">Pemasukan</option>
+                                                    <option value="Pengeluaran">Pengeluaran</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Wallets */}
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[11px] font-bold text-gray-400 uppercase">Dompet</label>
+                                                <select 
+                                                    value={filterDompet} 
+                                                    onChange={(e) => setFilterDompet(e.target.value)}
+                                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer hover:border-gray-300 transition-colors"
+                                                >
+                                                    <option value="">Semua Dompet</option>
+                                                    {wallets.map(w => (
+                                                        <option key={w.id} value={w.id}>{w.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            {/* Categories */}
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[11px] font-bold text-gray-400 uppercase">Kategori</label>
+                                                <select 
+                                                    value={filterKategori} 
+                                                    onChange={(e) => setFilterKategori(e.target.value)}
+                                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer hover:border-gray-300 transition-colors"
+                                                >
+                                                    <option value="">Semua Kategori</option>
+                                                    {categories.map(c => (
+                                                        <option key={c.id} value={c.id}>{c.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             {selectedRows.length > 0 && (
                                 <div className="relative" ref={bulkRef}>

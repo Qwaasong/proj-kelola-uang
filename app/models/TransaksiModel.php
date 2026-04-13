@@ -8,21 +8,46 @@ class TransaksiModel {
         $this->conn = Database::getConnection();
     }
 
-    public function getPaginated($user_id, $search, $limit, $offset) {
+    public function getPaginated($user_id, $search, $limit, $offset, $filters = []) {
         $query = "SELECT t.*, d.nama_dompet, k.nama_kategori 
                   FROM transaksi t
                   LEFT JOIN dompet d ON t.dompet_id = d.id
                   LEFT JOIN kategori k ON t.kategori_id = k.id
                   WHERE t.user_id = :user_id";
 
+        $params = [':user_id' => $user_id];
+
         if (!empty($search)) {
             $query .= " AND t.keterangan LIKE :search";
+            $params[':search'] = '%' . $search . '%';
         }
-        $query .= " ORDER BY t.tanggal DESC, t.created_at DESC LIMIT :limit OFFSET :offset";
+
+        if (!empty($filters['kategori_id'])) {
+            $query .= " AND t.kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+
+        if (!empty($filters['dompet_id'])) {
+            $query .= " AND t.dompet_id = :dompet_id";
+            $params[':dompet_id'] = $filters['dompet_id'];
+        }
+
+        if (!empty($filters['jenis'])) {
+            $query .= " AND t.jenis = :jenis";
+            $params[':jenis'] = $filters['jenis'];
+        }
+
+        // Sorting Logic with Allow-list
+        $allowedSortColumns = ['tanggal', 'jumlah', 'created_at', 'keterangan'];
+        $sortBy = isset($filters['sort_by']) && in_array($filters['sort_by'], $allowedSortColumns) ? $filters['sort_by'] : 'tanggal';
+        $order = isset($filters['order']) && strtoupper($filters['order']) === 'ASC' ? 'ASC' : 'DESC';
+
+        $query .= " ORDER BY t.$sortBy $order, t.created_at DESC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        if (!empty($search)) $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
         $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -30,12 +55,34 @@ class TransaksiModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function countTotal($user_id, $search) {
+    public function countTotal($user_id, $search, $filters = []) {
         $query = "SELECT COUNT(id) as total FROM transaksi WHERE user_id = :user_id";
-        if (!empty($search)) $query .= " AND keterangan LIKE :search";
+        $params = [':user_id' => $user_id];
+
+        if (!empty($search)) {
+            $query .= " AND keterangan LIKE :search";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        if (!empty($filters['kategori_id'])) {
+            $query .= " AND kategori_id = :kategori_id";
+            $params[':kategori_id'] = $filters['kategori_id'];
+        }
+
+        if (!empty($filters['dompet_id'])) {
+            $query .= " AND dompet_id = :dompet_id";
+            $params[':dompet_id'] = $filters['dompet_id'];
+        }
+
+        if (!empty($filters['jenis'])) {
+            $query .= " AND jenis = :jenis";
+            $params[':jenis'] = $filters['jenis'];
+        }
+
         $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        if (!empty($search)) $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
