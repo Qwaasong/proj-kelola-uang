@@ -41,7 +41,6 @@ class TransaksiModel {
         return $row['total'];
     }
 
-    // UPDATE: Menambahkan is_berulang dan frekuensi langsung ke tabel ini
     public function createTransaksi($user_id, $dompet_id, $kategori_id, $jenis, $tipe, $jumlah, $tanggal, $keterangan, $is_berulang, $selected_days, $limit_date) {
         try {
             $this->conn->beginTransaction();
@@ -119,31 +118,48 @@ class TransaksiModel {
         }
     }
 
-    public function deleteTransaksi($id, $user_id) {
+    // UPDATE: Method dihapus tunggal ditingkatkan menjadi delete massal (multiple)
+    public function deleteMultipleTransaksi($ids, $user_id) {
+        if (empty($ids)) return false;
+
         try {
             $this->conn->beginTransaction();
 
-            // 1. Ambil data transaksi lama untuk tahu apa yang harus dibalikkan
-            $qOld = "SELECT dompet_id, jenis, jumlah FROM transaksi WHERE id = :id AND user_id = :user_id FOR UPDATE";
+            // Membuat placeholder '?' dinamis sesuai jumlah ID yang diberikan (contoh: "?, ?, ?")
+            $inQuery = implode(',', array_fill(0, count($ids), '?'));
+            $params = $ids;
+            $params[] = $user_id;
+
+            // 1. Ambil data transaksi lama untuk mengembalikan (revert) saldo dompet
+            $qOld = "SELECT dompet_id, jenis, jumlah FROM transaksi WHERE id IN ($inQuery) AND user_id = ? FOR UPDATE";
             $stmtOld = $this->conn->prepare($qOld);
-            $stmtOld->execute([':id' => $id, ':user_id' => $user_id]);
-            $oldTx = $stmtOld->fetch(PDO::FETCH_ASSOC);
+            $stmtOld->execute($params);
+            $oldTxs = $stmtOld->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!$oldTx) { $this->conn->rollBack(); return false; }
-
-            // 2. Balikkan saldo dompet
-            if ($oldTx['dompet_id']) {
-                $revQuery = ($oldTx['jenis'] === 'Pemasukan') ? 
-                    "UPDATE dompet SET saldo = saldo - :jumlah WHERE id = :dompet_id AND user_id = :user_id" : 
-                    "UPDATE dompet SET saldo = saldo + :jumlah WHERE id = :dompet_id AND user_id = :user_id";
-                $stmtRev = $this->conn->prepare($revQuery);
-                $stmtRev->execute([':jumlah' => $oldTx['jumlah'], ':dompet_id' => $oldTx['dompet_id'], ':user_id' => $user_id]);
+            if (!$oldTxs) { 
+                $this->conn->rollBack(); 
+                return false; 
             }
 
-            // 3. Hapus Transaksi
-            $qDel = "DELETE FROM transaksi WHERE id = :id AND user_id = :user_id";
+            // 2. Balikkan (revert) saldo dompet untuk tiap transaksi yang terhapus
+            foreach ($oldTxs as $oldTx) {
+                if ($oldTx['dompet_id']) {
+                    $revQuery = ($oldTx['jenis'] === 'Pemasukan') ? 
+                        "UPDATE dompet SET saldo = saldo - :jumlah WHERE id = :dompet_id AND user_id = :user_id" : 
+                        "UPDATE dompet SET saldo = saldo + :jumlah WHERE id = :dompet_id AND user_id = :user_id";
+                    $stmtRev = $this->conn->prepare($revQuery);
+                    $stmtRev->execute([
+                        ':jumlah' => $oldTx['jumlah'], 
+                        ':dompet_id' => $oldTx['dompet_id'], 
+                        ':user_id' => $user_id
+                    ]);
+                }
+            }
+
+            // 3. Hapus Transaksi Sekaligus
+            $qDel = "DELETE FROM transaksi WHERE id IN ($inQuery) AND user_id = ?";
             $stmtDel = $this->conn->prepare($qDel);
-            $stmtDel->execute([':id' => $id, ':user_id' => $user_id]);
+            $stmtDel->execute($params);
 
             $this->conn->commit();
             return true;
