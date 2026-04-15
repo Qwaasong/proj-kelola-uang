@@ -13,55 +13,5 @@
   }
 }
 
-/* --- Toastr.js Custom Animation --- */
 
-/* Animasi Masuk (Slide from Right + Bounce) */
-@keyframes slideBounceIn {
-    0% {
-        opacity: 0;
-        transform: translateX(200px); /* Mulai dari luar layar kanan */
-    }
-    70% {
-        transform: translateX(-20px); /* Melampaui posisi asli (bounce) */
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0); /* Kembali ke posisi normal */
-    }
-}
-
-/* Animasi Keluar (Slide Out) */
-@keyframes slideOutRight {
-    0% {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
-/* Terapkan ke elemen Toastr */
-#toast-container > .toast {
-    animation: slideBounceIn 0.5s ease-in-out;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    opacity: 1;
-}
-
-#toast-container > .toast:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Saat toast ditutup */
-#toast-container > .toast-hiding {
-    animation: slideOutRight 0.3s forwards;
-}
-
-/* Adjust Toastr Styles to match theme */
-.toast-success { background-color: #408A71 !important; }
-.toast-error { background-color: #FF8A8A !important; }
-.toast-warning { background-color: #FBB040 !important; }
-.toast-info { background-color: #8093F1 !important; }
 

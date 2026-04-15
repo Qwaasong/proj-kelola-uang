@@ -92,11 +92,13 @@ const Dashboard = () => {
             <div className="px-8 pb-10 flex flex-col gap-6 w-full">
 
                 {data && !hasActivity ? (
-                    <EmptyState 
-                        title="Belum Ada Transaksi yang Dilakukan !"
-                        buttonText="Tambah Transaksi"
-                        onButtonClick={() => navigate('/transaksi')}
-                    />
+                    <div class="w-full bg-white rounded-xl ring-1 ring-gray-950/5 p-8">
+                        <EmptyState 
+                            title="Belum Ada Transaksi yang Dilakukan !"
+                            buttonText="Tambah Transaksi"
+                            onButtonClick={() => navigate('/transaksi')}
+                        />
+                    </div>
                 ) : (
                     <>
                         {/* Kartu Ringkasan */}

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { InfoIcon } from '@phosphor-icons/react';
 import Chart from 'chart.js/auto';
 import Button from './Button';
+import Tooltip from './Tooltip';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -57,11 +58,13 @@ const BarChart = ({ data = [] }) => {
     }, []);
 
     return (
-        <div className="relative overflow-hidden rounded-xl bg-white p-6 ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] dark:bg-gray-900 dark:ring-white/10 dark:shadow-none transition duration-300 hover:ring-gray-950/10 w-full xl:col-span-3 flex flex-col">
+        <div className="relative overflow-hidden rounded-xl bg-white p-6 ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] dark:bg-gray-900 dark:ring-white/10 dark:shadow-none transition duration-300 hover:ring-gray-950/10 w-full xl:col-span-3 flex flex-col min-h-[440px]">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
                     <h2 className="text-[16px] font-semibold">Distribusi Dana</h2>
-                    <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                    <Tooltip text="Pembagian alokasi dana berdasarkan kategori untuk memantau komposisi pengeluaran Anda.">
+                        <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                    </Tooltip>
                 </div>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/laporan')}>Lihat Laporan</Button>
             </div>

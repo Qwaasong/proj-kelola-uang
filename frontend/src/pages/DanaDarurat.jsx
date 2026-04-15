@@ -16,6 +16,7 @@ import EmptyState from '../components/EmptyState';
 import { useState, useEffect, useMemo } from 'react';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
+import notify from '../utils/notify';
 
 /**
  * Halaman Dana Darurat.
@@ -63,7 +64,7 @@ const DanaDarurat = () => {
             setIsTargetModalOpen(false);
             loadData();
         } catch (err) {
-            toastr.error("Gagal update target: " + err.message);
+            notify.error("Gagal update target: " + err.message);
         }
     };
 
@@ -81,7 +82,7 @@ const DanaDarurat = () => {
             setDescription('');
             loadData();
         } catch (err) {
-            toastr.error("Gagal menambah dana: " + err.message);
+            notify.error("Gagal menambah dana: " + err.message);
         }
     };
 

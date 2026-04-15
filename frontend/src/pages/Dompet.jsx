@@ -6,11 +6,11 @@ import Input from '../components/Input';
 import Select from '../components/Select';
 import EmptyState from '../components/EmptyState';
 import { useState, useMemo, useEffect } from 'react';
-import { WalletIcon, BankIcon, ArrowsLeftRightIcon, TrashIcon } from '@phosphor-icons/react';
+import { WalletIcon, BankIcon, TrashIcon } from '@phosphor-icons/react';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
+import notify from '../utils/notify';
 
-// --- KOMPONEN: Card Dompet ---
 const WalletCard = ({ title, amount, onEdit, onTransfer, onDelete }) => (
     <div className="
     group relative overflow-hidden bg-white p-6 rounded-xl 
@@ -122,7 +122,7 @@ const Dompet = () => {
             setWalletBalance('');
             loadData();
         } catch (err) {
-            toastr.error("Gagal menambah dompet: " + err.message);
+            notify.error("Gagal menambah dompet: " + err.message);
         }
     };
 
@@ -147,7 +147,7 @@ const Dompet = () => {
             setEditingWallet(null);
             loadData();
         } catch (err) {
-            toastr.error("Gagal memperbarui dompet: " + err.message);
+            notify.error("Gagal memperbarui dompet: " + err.message);
         }
     };
 
@@ -163,7 +163,7 @@ const Dompet = () => {
             setTargetWalletId(null);
             loadData();
         } catch (err) {
-            toastr.error("Transfer gagal: " + err.message);
+            notify.error("Transfer gagal: " + err.message);
         }
     };
 
@@ -173,7 +173,7 @@ const Dompet = () => {
             await actionApi('DELETE', `/dompet?id=${id}`);
             loadData();
         } catch (err) {
-            toastr.error("Gagal menghapus: " + err.message);
+            notify.error("Gagal menghapus: " + err.message);
         }
     };
 
@@ -198,7 +198,7 @@ const Dompet = () => {
 
             <div className="px-8 pb-10 w-full max-w-[1400px]">
                 {dompetData && !wallets.length ? (
-                    <div className="max-w-[750px] bg-white rounded-xl ring-1 ring-gray-950/5 p-8">
+                    <div className="w-full bg-white rounded-xl ring-1 ring-gray-950/5 p-8">
                         <EmptyState 
                             title="Dompet Anda Masih Kosong"
                             description="Tambahkan dompet atau rekening bank untuk mulai mencatat saldo dan mengelola dana Anda secara terpusat."

@@ -17,6 +17,7 @@ import EmptyState from '../components/EmptyState';
 import { useState, useMemo, useEffect } from 'react';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
+import notify from '../utils/notify';
 
 /**
  * Halaman Goal Keuangan.
@@ -76,7 +77,7 @@ const Goal = () => {
             setDeadline('');
             loadData();
         } catch (err) {
-            toastr.error("Gagal membuat goal: " + err.message);
+            notify.error("Gagal membuat goal: " + err.message);
         }
     };
 
@@ -93,7 +94,7 @@ const Goal = () => {
             setWalletId(null);
             loadData();
         } catch (err) {
-            toastr.error("Gagal menabung: " + err.message);
+            notify.error("Gagal menabung: " + err.message);
         }
     };
 
@@ -103,7 +104,7 @@ const Goal = () => {
             await actionApi('DELETE', `/target?id=${id}`);
             loadData();
         } catch (err) {
-            toastr.error("Gagal menghapus: " + err.message);
+            notify.error("Gagal menghapus: " + err.message);
         }
     };
 

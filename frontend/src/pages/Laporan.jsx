@@ -19,7 +19,7 @@ import useFirstLoad from '../hooks/useFirstLoad';
 import LaporanSkeleton from '../components/LaporanSkeleton';
 import useApi from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
-import toastr from '../utils/toastr';
+import notify from '../utils/notify';
 
 // Deklarasi Variabel
 const PERIODS = ['Minggu Ini', 'Bulan Ini', '3 Bulan', 'Tahun Ini'];
@@ -355,7 +355,7 @@ const Laporan = () => {
             a.remove();
         } catch (err) {
             console.error(err);
-            toastr.error("Error: " + err.message);
+            notify.error("Error: " + err.message);
         } finally {
             setIsExporting(false);
         }

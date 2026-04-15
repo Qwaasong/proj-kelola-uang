@@ -11,6 +11,7 @@ import {
     CaretLeftIcon,     
     CaretRightIcon,  
 } from '@phosphor-icons/react';
+import Tooltip from './Tooltip';
 
 const mainMenus = [
     { id: 1, name: 'Dashboard', icon: HouseIcon, path: '/dashboard' },
@@ -23,8 +24,7 @@ const mainMenus = [
 
 
 const footerMenus = [
-    { id: 6, name: 'Help', icon: QuestionIcon, colorClass: 'text-gray-500 hover:text-secondary', path: '/help' },
-    { id: 7, name: 'Logout Account', icon: SignOutIcon, colorClass: 'text-[#E74C3C] hover:text-[#c0392b]', path: '/login' },
+    { id: 6, name: 'Logout Account', icon: SignOutIcon, colorClass: 'text-[#E74C3C] hover:text-[#c0392b]', path: '/login' },
 ];
 
 /**
@@ -129,7 +129,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                 >
                                     {/* Ikon */}
                                     <div className="w-[56px] h-full flex items-center justify-center flex-shrink-0">
-                                        <IconComponent size={22} weight={isActive ? 'fill' : 'regular'} />
+                                        {!isOpen ? (
+                                            <Tooltip text={menu.name} position="right" offset={40}>
+                                                <IconComponent size={22} weight={isActive ? 'fill' : 'regular'} />
+                                            </Tooltip>
+                                        ) : (
+                                            <IconComponent size={22} weight={isActive ? 'fill' : 'regular'} />
+                                        )}
                                     </div>
 
                                     {/* Label */}
@@ -140,14 +146,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                     >
                                         {menu.name}
                                     </span>
-
-                                    {/* Tooltip saat sidebar collapsed */}
-                                    {!isOpen && (
-                                        <div className="absolute left-[70px] bg-secondary text-white text-[12px] px-3 py-1.5 rounded-md whitespace-nowrap opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none shadow-md z-50">
-                                            {menu.name}
-                                            <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rotate-45"></div>
-                                        </div>
-                                    )}
                                 </Link>
                             </li>
                         );
@@ -159,7 +157,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <div className="pb-8 space-y-2 flex flex-col items-center w-full px-4">
                 {footerMenus.map((menu) => {
                     const IconComponent = menu.icon;
-                    const isLogout = menu.id === 7;
+                    const isLogout = menu.id === 6;
                     
                     return (
                         <div
@@ -168,7 +166,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             className={`group relative flex items-center h-12 w-full rounded-xl cursor-pointer transition-colors duration-200 hover:bg-gray-50 ${menu.colorClass}`}
                         >
                             <div className="w-[56px] h-full flex items-center justify-center flex-shrink-0">
-                                <IconComponent size={22} />
+                                {!isOpen ? (
+                                    <Tooltip text={menu.name} position="right" offset={40}>
+                                        <IconComponent size={22} />
+                                    </Tooltip>
+                                ) : (
+                                    <IconComponent size={22} />
+                                )}
                             </div>
                             <span
                                 className={`text-[14px] font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
@@ -177,12 +181,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             >
                                 {menu.name}
                             </span>
-                            {!isOpen && (
-                                <div className="absolute left-[70px] bg-secondary text-white text-[12px] px-3 py-1.5 rounded-md whitespace-nowrap opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none shadow-md z-50">
-                                    {menu.name}
-                                    <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-secondary rotate-45"></div>
-                                </div>
-                            )}
                         </div>
                     );
                 })}

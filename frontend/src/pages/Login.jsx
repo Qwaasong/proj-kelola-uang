@@ -5,7 +5,7 @@ import AuthHeader from '../components/AuthHeader';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import useApi from '../hooks/useApi';
-import toastr from '../utils/toastr';
+import notify from '../utils/notify';
 import Loading from '../components/Loading';
 
 const Login = () => {
@@ -34,7 +34,7 @@ const Login = () => {
                 localStorage.setItem('user', JSON.stringify(response.data.user));
             }
 
-            toastr.success("Berhasil masuk!");
+            notify.success("Berhasil masuk!");
             navigate('/dashboard');
             
         } catch (err) {
@@ -84,7 +84,7 @@ const Login = () => {
             // Jika response tidak dikenal
             else {
                 const errorMessage = err.message || "Terjadi kesalahan saat login";
-                toastr.error(errorMessage);
+                notify.error(errorMessage);
                 setErrors(prev => ({ ...prev, general: errorMessage }));
             }
         }

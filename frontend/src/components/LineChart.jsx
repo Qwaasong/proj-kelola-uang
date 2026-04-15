@@ -2,19 +2,10 @@ import { useEffect, useRef } from 'react';
 import Button from './Button';
 import {
     InfoIcon,
-    CalendarIcon,
-    ArrowUpRightIcon,
-    ArrowDownRightIcon
 } from '@phosphor-icons/react';
+import Tooltip from './Tooltip';
 import Chart from 'chart.js/auto';
 import { useNavigate } from 'react-router-dom';
-
-// Data transaksi hari ini - fallback jika belum ada data
-const mockTransactions = [
-    { label: 'Makan dan Minum', amount: 0 },
-    { label: 'Transportasi', amount: 0 },
-    { label: 'Lainnya', amount: 0 },
-];
 
 /**
  * Komponen LineChart — Grafik area transaksi pemasukan dan pengeluaran hari ini.
@@ -22,16 +13,19 @@ const mockTransactions = [
  * @param {Array} trendData - Data dari grafik_waktu
  * @param {Object} todayData - Data dari transaksi_hari_ini
  */
-const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0, status: "" } }) => {
+const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0, status: "", detail: [] } }) => {
     const navigate = useNavigate();
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
 
+    // Filter detail transaksi yang hanya memiliki nominal > 0
+    const filteredDetails = (todayData.detail || []).filter(trx => trx.amount > 0);
+
     // Format labels: Jika jam 8 -> "08:00"
-    const labels = trendData.length > 0 
-        ? trendData.map(d => `${d.jam < 10 ? '0' : ''}${d.jam}:00`) 
+    const labels = trendData.length > 0
+        ? trendData.map(d => `${d.jam < 10 ? '0' : ''}${d.jam}:00`)
         : ['08:00', '12:00', '16:00', '20:00'];
-    
+
     const dataMasuk = trendData.length > 0 ? trendData.map(d => d.masuk) : [0, 0, 0, 0];
     const dataKeluar = trendData.length > 0 ? trendData.map(d => d.keluar) : [0, 0, 0, 0];
 
@@ -101,11 +95,13 @@ const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0,
     }, []);
 
     return (
-        <div className="relative overflow-hidden rounded-xl bg-white p-6 ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] dark:bg-gray-900 dark:ring-white/10 dark:shadow-none transition duration-300 hover:ring-gray-950/10 w-full xl:col-span-2 flex flex-col">
+        <div className="relative overflow-hidden rounded-xl bg-white p-6 ring-1 ring-gray-950/5 shadow-[0_2px_4px_rgba(0,0,0,0.05),0_1px_0_rgba(0,0,0,0.05)] dark:bg-gray-900 dark:ring-white/10 dark:shadow-none transition duration-300 hover:ring-gray-950/10 w-full xl:col-span-2 flex flex-col min-h-[440px]">
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
                     <h2 className="text-[16px] font-semibold">Transaksi Hari Ini</h2>
-                    <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                    <Tooltip text="Rangkuman arus kas hari ini berdasarkan kategori transaksi yang dilakukan.">
+                        <InfoIcon size={18} className="text-gray-400 cursor-pointer hover:text-gray-600" />
+                    </Tooltip>
                 </div>
                 <Button size="sm" variant="secondary" onClick={() => navigate('/transaksi')}>Detail</Button>
             </div>
@@ -113,24 +109,26 @@ const LineChart = ({ trendData = [], todayData = { Pemasukan: 0, Pengeluaran: 0,
             {/* Total Transaksi */}
             <div className="mb-5">
                 <p className="text-[28px] font-semibold flex items-baseline gap-1 text-secondary">
-                    <span className="text-sm text-gray-400 font-medium">Rp</span> 
+                    <span className="text-sm text-gray-400 font-medium">Rp</span>
                     {new Intl.NumberFormat('id-ID').format(Math.abs(todayData.Pemasukan - todayData.Pengeluaran))}
                 </p>
                 <p className="text-[11px] text-gray-500 font-medium mt-1">{todayData.status || "Pencatatan hari ini"}</p>
             </div>
 
-            {/* Daftar Kategori Transaksi - Berdasarkan data asli atau fallback mock */}
-            <div className="space-y-3 mb-6 text-[13px] font-medium">
-                {(todayData.detail && todayData.detail.length > 0 ? todayData.detail : mockTransactions).map((trx, idx) => (
-                    <div key={idx} className="flex justify-between">
-                        <span className="text-gray-600">{trx.label}</span>
-                        <span>Rp {new Intl.NumberFormat('id-ID').format(trx.amount)}</span>
-                    </div>
-                ))}
-            </div>
+            {/* Daftar Kategori Transaksi - Hanya tampil jika ada data > 0 */}
+            {filteredDetails.length > 0 && (
+                <div className="space-y-3 mb-6 text-[13px] font-medium animate-page-fade">
+                    {filteredDetails.map((trx, idx) => (
+                        <div key={idx} className="flex justify-between">
+                            <span className="text-gray-600">{trx.label}</span>
+                            <span>Rp {new Intl.NumberFormat('id-ID').format(trx.amount)}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-            {/* Grafik */}
-            <div className="flex-grow w-full h-[150px] relative mt-auto">
+            {/* Grafik - Akan melebar jika daftar kategori kosong (min-h: 150px) */}
+            <div className="flex-grow w-full min-h-[150px] relative mt-auto">
                 <canvas ref={chartRef}></canvas>
             </div>
 

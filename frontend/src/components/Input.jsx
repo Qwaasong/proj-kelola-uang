@@ -60,7 +60,14 @@ const Input = ({
                             ${inputSizes[size]} 
                             ${errorClasses} 
                             ${icon ? 'pl-10' : ''}
-                        `}
+                        `}  
+                        {...(props.type === 'number' ? { 
+                            min: '0',
+                            onKeyDown: (e) => {
+                                if (['-', 'e', 'E'].includes(e.key)) e.preventDefault();
+                                if (props.onKeyDown) props.onKeyDown(e);
+                            }
+                        } : {})}
                         {...props}
                     />
                 )}
