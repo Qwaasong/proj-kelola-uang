@@ -1,0 +1,1 @@
+Aku kesel su osjur
